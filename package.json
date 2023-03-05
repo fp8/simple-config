@@ -1,0 +1,56 @@
+{
+    "name": "@fp8/simple-config",
+    "version": "0.1.0",
+    "description": "Simple Config Reader",
+    "main": "lib/index.js",
+    "repository": "https://gitlab.com/fp8-js-lib/light-config",
+    "author": "marcos.lin@farport.co",
+    "license": "MIT",
+    "private": false,
+    "types": "lib/index.d.ts",
+    "scripts": {
+        "build": "yarn lint && yarn build:ts && yarn test-lib && yarn gendoc",
+        "build:ts": "tsc --project src/tsconfig.json",
+        "gendoc": "OUTPUTDIR=build/docs && mkdir -p $OUTPUTDIR && typedoc --readme none --excludePrivate --tsconfig src/tsconfig.json --out $OUTPUTDIR src/index.ts",
+        "lint:ts": "eslint src --ext .ts,.tsx",
+        "lint": "yarn lint:ts",
+        "info:version": "node scripts/packageInfo.js",
+        "test-lib:unit": "ts-mocha --project test/tsconfig.lib.json -r tsconfig-paths/register 'test/*.spec.ts' 'test/**/*.spec.ts'",
+        "test-lib": "yarn test-lib:unit",
+        "test:unit": "ts-mocha --project test/tsconfig.json -r tsconfig-paths/register 'test/*.spec.ts' 'test/**/*.spec.ts'",
+        "test": "yarn test:unit"
+    },
+    "devDependencies": {
+        "@types/chai": "^4.3.4",
+        "@types/chai-as-promised": "^7.1.5",
+        "@types/debug": "^4.1.7",
+        "@types/mocha": "^10.0.1",
+        "@types/node": "^18.14.1",
+        "@types/sinon": "^10.0.13",
+        "@types/sinon-chai": "^3.2.9",
+        "@typescript-eslint/eslint-plugin": "^5.53.0",
+        "@typescript-eslint/parser": "^5.53.0",
+        "chai": "^4.3.7",
+        "chai-as-promised": "^7.1.1",
+        "eslint": "^8.35.0",
+        "mocha": "^10.2.0",
+        "sinon": "^15.0.1",
+        "sinon-chai": "^3.7.0",
+        "ts-mocha": "^10.0.0",
+        "ts-node": "^10.9.1",
+        "tsconfig-paths": "^3.14.2",
+        "typedoc": "^0.23.25",
+        "typescript": "^4.9.5"
+    },
+    "dependencies": {
+        "class-transformer": "^0.5.1",
+        "class-validator": "^0.14.0",
+        "jlog-facade": "^0.6.0",
+        "reflect-metadata": "^0.1.13"
+    },
+    "peerDependencies": {
+        "class-transformer": "^0.5.1",
+        "class-validator": "^0.14.0",
+        "reflect-metadata": "^0.1.13"
+    }
+}

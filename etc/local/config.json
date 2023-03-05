@@ -1,0 +1,8 @@
+{
+    "name": "light-config-local",
+    "db": {
+        "username": "user-lOVx1VJiEP",
+        "password": "pwd-VITOlv5aPU"
+    },
+    "tags": ["tag1", "tag2"]
+}
