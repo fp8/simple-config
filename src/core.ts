@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as nodePath from 'path';
-import {parse as parseYaml} from 'yaml';
+import { parse as parseYaml } from 'yaml';
 
 import {
     localDebug,
@@ -42,24 +42,25 @@ function checkConfigFileExtension(filepath: string): boolean {
  * @returns 
  */
 export function loadConfigFile(filepath: string): IJson | undefined {
+    // Make sure that config file to be loaded ends with the expected extension
     if (!checkConfigFileExtension(filepath)) {
         return undefined;
     }
 
-    const content = fs.readFileSync(filepath, {encoding: 'utf8'});
-    localDebug(() => `data read: ${content}`);
-
     let loaded: IJson;
     try {
+        const content = fs.readFileSync(filepath, { encoding: 'utf8' });
+        localDebug(() => `data read: ${content}`);
+
         if (filepath.endsWith('.yaml') || filepath.endsWith('.yml')) {
             loaded = parseYaml(content);
         } else if (filepath.endsWith('.json')) {
             loaded = JSON.parse(content);
         } else {
             // If unexpected extension then just return the content
-            loaded = {content};
+            loaded = { content };
         }
-    } catch(e) {
+    } catch (e) {
         logger.error(`Failed to config file ${filepath}`, e as Error);
         return undefined;
     }
@@ -75,7 +76,7 @@ export function loadConfigFile(filepath: string): IJson | undefined {
  * 
  * [app|config].[json|yaml]
  * 
- * If a `filename` is provided, return just that filename
+ * If a `filename` is provided, return just that filename
  * 
  * @param filename 
  * @returns 
@@ -93,7 +94,7 @@ function generateConfigFiles(filename: string | undefined) {
     }
     return configFiles;
 }
-  
+
 /**
  * Generate a list of file paths to search for the config file given an env
  * and optionally a file name.  The resulting pattern would be:
@@ -138,14 +139,14 @@ export function readConfig(
 
     // Build the configuration file to look for of pattern ./[etc|config]/[.|${fp8env}]/[app|config].[json|yaml]
     const paths = generateConfigFilesToSearch(fp8env, filename);
-  
+
     // Return first config found from configured paths
     let source: string | undefined;
     let configDir: string | undefined;
     let configJson: IJson = {};
     for (const path of paths) {
-      const absPath = nodePath.resolve(path);
-      localDebug(() => `Looking for file ${absPath}`);
+        const absPath = nodePath.resolve(path);
+        localDebug(() => `Looking for file ${absPath}`);
         if (fs.existsSync(absPath)) {
             const jsonFile = loadConfigFile(absPath);
             if (jsonFile !== undefined) {
@@ -157,7 +158,7 @@ export function readConfig(
             }
         }
     }
-  
+
     // Return 
-    return {configJson, source, configDir};
+    return { configJson, source, configDir };
 }

@@ -1,4 +1,3 @@
-import * as nodePath from 'path';
 import { localDebug, IJson, KV, isArray, isEmpty } from 'jlog-facade';
 
 import { createEntityAndValidate, EntityCreationError } from './entity';
@@ -93,37 +92,6 @@ export class ConfigStore<T extends object> {
   }
 
   /**
-   * Get the basename without extension of the config file loaded.
-   * If no config file found, default to `config`
-   * 
-   * @returns 
-   */
-  protected getSourceName(): string {
-    let sourceName = 'config';
-    if (this.source !== undefined) {
-      const parts = nodePath.parse(this.source);
-      sourceName = parts.name;
-    }
-    return sourceName;
-  }
-
-  /**
-   * Create a clone of loaded config data where data is under
-   * the key of loaded config file name
-   *
-   * @returns 
-   */
-  protected cloneDataForGetMethod(): object {
-    // Create a clone of the data
-    const sourceName = this.getSourceName();
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return {
-      [sourceName]: Object.assign({}, this.data)
-    };
-  }
-
-  /**
    * Allow retrieval of the loaded config data using the dot notation. Ie:
    * - 'config.db.username'
    * 
@@ -139,10 +107,10 @@ export class ConfigStore<T extends object> {
     // source: https://stackoverflow.com/a/19048967/2355087
     const keys = path.split(".");
 
+    // Create a clone of the data so that result can be built
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let obj: any = this.cloneDataForGetMethod();
+    let obj: any = Object.assign({}, this.data);
     localDebug(() => `ConfigStore.get obj: ${JSON.stringify(obj)}`, 'ConfigStore.get');
-
 
     while (keys.length) {
       const currentKey = keys.shift();
