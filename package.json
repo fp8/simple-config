@@ -3,7 +3,7 @@
     "version": "0.1.0",
     "description": "Simple Config Reader",
     "main": "lib/index.js",
-    "repository": "https://gitlab.com/fp8-js-lib/light-config",
+    "repository": "https://github.com/fp8/simple-config",
     "author": "marcos.lin@farport.co",
     "license": "MIT",
     "private": false,
