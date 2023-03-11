@@ -1,9 +1,8 @@
 # Simple Config Reader
 
-Read the config file from `./[etc|config]/${FP8_ENV}/` directory.  This package is under `@fp8` namespace as it contains
-Farport Software's specific view on how the code of project is to be organized.
+Read the config file from `./[etc|config]/${FP8_ENV}/` directory.  The file can be `[app|config].[json|yaml]`.  Only `.json` and `.yaml` extension are supported.  Any other file extension found or passed will not be loaded.
 
-This config reader support `.json` and `.yaml` files.  Any other file extension passed will not be loaded.
+*Note*: Package under `@fp8` contains Farport Software's specific view on how the code of project is to be organized.
 
 ## Usage
 
@@ -25,23 +24,44 @@ class ConfigData {
 }
 ```
 
-Load the config by:
+Load the config using [ConfigStore](https://fp8.github.io/simple-config/classes/ConfigStore.html):
 
 ```typescript
 const store = new ConfigStore(ConfigData);
 const config = store.data; // would be of type ConfigData
 
 console.log('username: ', config.username);
+// output user-123
 ```
 
 ## Config Model
 
-The configuration model's properties can be decorated with [class-validator](https://github.com/typestack/class-validator) to
-ensure that config data loaded is indeed thie expected format.
+The configuration model's properties can be decorated with [class-validator](https://github.com/typestack/class-validator)
+to ensure that config data loaded is indeed thie expected format.
+[ConfigStore](https://fp8.github.io/simple-config/classes/ConfigStore.html) raises
+[EntityCreationError](https://fp8.github.io/simple-config/classes/EntityCreationError.html) if validation fails.
+
+It is also possible to skip the definition of the config model by returning a generic
+[IJson](https://fp8.github.io/jlog-facade/interfaces/IJson.html) and obtain the config value
+using the [ConfigStore.get](https://fp8.github.io/simple-config/classes/ConfigStore.html#get) method:
+
+```yaml
+name: test-app
+db:
+    username: user-123
+    password: password-234
+```
+
+```typescript
+const store = new ConfigStore<IJson>();
+
+console.log('username: ', store.get('db.username'));
+// output user-123
+```
 
 ## Config Options
 
-The [IConfigOption](https://fp8.github.io/simple-config/interfaces/IConfigOption.html) allow customization on how the config
+The [IConfigStoreOptions](https://fp8.github.io/simple-config/interfaces/IConfigStoreOptions.html) allow customization on how the config
 should be loaded.
 
 #### env
