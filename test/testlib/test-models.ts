@@ -47,3 +47,23 @@ export class ConfigDataAll {
     @IsString()
     city?: string;
 }
+
+export class JustName {
+    @IsString()
+    @MinLength(3)
+    name!: string;
+}
+
+export class ConfigDataYaml {
+    @Type(() => JustName)
+    @ValidateNested()
+    app!: JustName;
+
+    @Type(() => JustName)
+    @ValidateNested()
+    config!: JustName
+
+    @Type(() => JustName)
+    @ValidateNested()
+    extra!: JustName
+}

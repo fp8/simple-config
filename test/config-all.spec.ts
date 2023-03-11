@@ -3,7 +3,7 @@ import { ConfigStore, IConfigStoreOptions } from '@fp8proj';
 import {
   expect, ConfigDataAll,
   ConfigData, DatabaseConfig,
-  ExtraConfig,
+  ExtraConfig, ConfigDataYaml, JustName
 } from './testlib';
 
 
@@ -75,6 +75,9 @@ describe('config-all', () => {
     entries: { city: 'Milan-q4PvB16Fpe' }
   };
 
+  /**
+   * Test load all without validation.  The nested class are not the correct instances
+   */
   describe('no validation', () => {
     const store = new ConfigStore<ConfigDataAll>(undefined, configOptions);
     // console.log('### store.data:', store.data);
@@ -96,9 +99,12 @@ describe('config-all', () => {
     testConfigDataAll(store);
   });
 
+  /**
+   * Test load all with validation.  The nested class should be the expected instances
+   */
   describe('validate', () => {
     const store = new ConfigStore(ConfigDataAll, configOptions);
-    console.log('### store.data:', store.data);
+    // console.log('### store.data:', store.data);
 
     // Check instance
     it('db', () => {
@@ -115,6 +121,35 @@ describe('config-all', () => {
     });
 
     testConfigDataAll(store);
+  });
+
+  /**
+   * Make sure that loadAll also work for mixed yaml and json files
+   */
+  describe('yaml', () => {
+    const store = new ConfigStore(ConfigDataYaml, {
+      env: 'test-yaml',
+      loadAll: true
+    });
+
+    it('ConfigDataYaml.app', () => {
+      expect(store.data.app).to.be.instanceOf(JustName);
+      expect(store.data.app.name).to.eql('test-yaml/app.yaml');
+      expect(store.get('app.name')).to.eql('test-yaml/app.yaml');
+    });
+
+    it('ConfigDataYaml.config', () => {
+      expect(store.data.config).to.be.instanceOf(JustName);
+      expect(store.data.config.name).to.eql('test-yaml/config.yaml');
+      expect(store.get('config.name')).to.eql('test-yaml/config.yaml');
+    });
+
+    it('ConfigDataYaml.extra', () => {
+      expect(store.data.extra).to.be.instanceOf(JustName);
+      expect(store.data.extra.name).to.eql('test-yaml/extra.json');
+      expect(store.get('extra.name')).to.eql('test-yaml/extra.json');
+    });
+
   });
 
 });

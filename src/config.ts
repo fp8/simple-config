@@ -77,11 +77,14 @@ export class ConfigStore<T extends object> {
 
   /**
    * Allow retrieval of the loaded config data using the dot notation. Ie:
-   * - 'config.db.username'
+   * - 'db.username'
    * 
-   * The first entry `config` in this case is the name of the file loaded `config.json`.
+   * If [IConfigStoreOptions.loadAll] flag is set, the name of the file would be the first
+   * key.  Ie: if loaded config file is called `config.json`, the dot notation would be:
    * 
-   * This method is not optmized and created for retro compability of FPLogger.  Avoid
+   * - `config.db.name`
+   * 
+   * This method is not optmized and created for retro compability of FP8Config class.  Avoid
    * this method and use an actual configuration class instead.
    * 
    * @param path 
