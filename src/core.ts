@@ -19,6 +19,9 @@ interface IConfigFileReadResult {
     configJson: IJson;
 }
 
+/**
+ * Basic options for reading config file
+ */
 export interface IReadConfigOptions {
     /**
      * Provide env string to use to look for config file.  Default to `FP8_ENV` environmental variable
@@ -92,8 +95,6 @@ export function loadConfigFile(filepath: string): IJson | undefined {
 
     return loaded;
 }
-
-
 
 /**
  * Generate the config file names to look for based on the internally configured
@@ -182,19 +183,46 @@ function readPrimaryConfigFile(fp8env: string, filename: string | undefined): IC
     return { configJson, source, configDir };
 }
 
+/**
+ * Read all the config file in the config directory.  This is to be called after
+ * the primary configuration has been read and therefore configDir must exists
+ * 
+ * @param primaryFile 
+ * @param configDir 
+ */
+function readAllConfigFiles(primaryFile: string, configDir: string): IJson {
+    const result: IJson = {};
 
+    const configFiles = fs.readdirSync(configDir);
+
+
+    return result;
+}
 
 /**
  * Read the config file from the ../../etc/${FP8_ENV}/config.json
  */
-export function readConfig(options: IReadConfigOptions): { configJson: IJson, source?: string, configDir?: string } {
+export function readConfig(options: IReadConfigOptions): IConfigFileReadResult {
     // Set paths to find the logger.json file
     const fp8env = options.env ?? process.env.FP8_ENV ?? 'local';
 
     // Build the configuration file to look for of pattern ./[etc|config]/[.|${fp8env}]/[app|config].[json|yaml]
     const { configJson, source, configDir } = readPrimaryConfigFile(fp8env, options.configFileName);
 
-    // Return 
-    return { configJson, source, configDir };
-}
+    // Only load all configs if primary config found
+    if (options.loadAll === true && source !== undefined && configDir !== undefined) {
+        // get the name of primary config file without extension
+        const parts = nodePath.parse(source);
+        const primaryName = parts.name;
 
+        // Load all other config
+        const configData = readAllConfigFiles(source, configDir);
+
+        // Add primary config to the configData
+        configData[primaryName] = configJson;
+
+        return { configJson: configData, source, configDir };
+    } else {
+        return { configJson, source, configDir };
+    }
+}

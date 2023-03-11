@@ -92,10 +92,10 @@ describe('config', () => {
 
 
   describe('validation scenarios', () => {
-    it('bad-config', () => {
+    it('badConfig', () => {
       // Make sure that exception is thrown
       expect(() => {
-        const store = new ConfigStore(ConfigData, {configFileName: 'bad-config.json'});
+        const store = new ConfigStore(ConfigData, {configFileName: 'badConfig.json'});
       }).to.throw(EntityCreationError);
 
       /*
@@ -147,7 +147,7 @@ describe('config', () => {
       ]
       */
       try {
-        const store = new ConfigStore(ConfigData, {configFileName: 'bad-config.json'});
+        const store = new ConfigStore(ConfigData, {configFileName: 'badConfig.json'});
       } catch(err) {
         if (err instanceof EntityCreationError) {
           expect(err.details).has.lengthOf(2);
@@ -167,18 +167,18 @@ describe('config', () => {
       }
     });
 
-    it('extra-config', () => {
-      const store = new ConfigStore(ConfigData, {configFileName: 'extra-config.json'});
-      expect(store.data.name).to.eql('extra-config');
+    it('extraConfig', () => {
+      const store = new ConfigStore(ConfigData, {configFileName: 'extraConfig.json'});
+      expect(store.data.name).to.eql('extraConfig');
       expect(store.data.db.username).to.eql('user-LJ7tXjYsF5');
 
       // Intentially, extra is loaded but doesn't fail validation
       expect(store.get('extra')).to.eql('extra-LJ7tXjYsF5');
     });
 
-    it('extra-config no validation', () => {
-      const store = new ConfigStore<any>(undefined, {configFileName: 'extra-config.json'});
-      expect(store.data.name).to.eql('extra-config');
+    it('extraConfig no validation', () => {
+      const store = new ConfigStore<any>(undefined, {configFileName: 'extraConfig.json'});
+      expect(store.data.name).to.eql('extraConfig');
       expect(store.data.db.username).to.eql('user-LJ7tXjYsF5');
 
       // extra should be loaded
