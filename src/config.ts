@@ -1,26 +1,14 @@
-import * as nodePath from 'path';
 import { localDebug, IJson, KV, isArray, isEmpty } from 'jlog-facade';
 
 import { createEntityAndValidate, EntityCreationError } from './entity';
-import { logger, readConfig } from './core';
+import { logger, readConfig, IReadConfigOptions } from './core';
 
 
 
 /**
  * ConfigStore creation option
  */
-export interface IConfigStoreOptions {
-  /**
-   * Provide env string to use to look for config file.  Default to `FP8_ENV` environmental variable
-   * or `local`.
-   */
-  env?: string;
-
-  /**
-   * Set the name of config file to read.  Must be a .json file and defaults to `config.json`
-   */
-  configFileName?: string;
-
+export interface IConfigStoreOptions extends IReadConfigOptions {
   /**
    * Addtional entries to be added to data loaded
    */
@@ -53,7 +41,7 @@ export class ConfigStore<T extends object> {
 
   constructor(type?: { new(): T; }, options?: IConfigStoreOptions) {
     // Load data from config file, expect configJson to be at least {}
-    const { configJson, source, configDir } = readConfig(options?.env, options?.configFileName);
+    const { configJson, source, configDir } = readConfig(options ?? {});
 
     // Append to loaded data if necesary
     let configDataToUse: object;
@@ -88,43 +76,15 @@ export class ConfigStore<T extends object> {
   }
 
   /**
-   * Get the basename without extension of the config file loaded.
-   * If no config file found, default to `config`
-   * 
-   * @returns 
-   */
-  protected getSourceName(): string {
-    let sourceName = 'config';
-    if (this.source !== undefined) {
-      const parts = nodePath.parse(this.source);
-      sourceName = parts.name;
-    }
-    return sourceName;
-  }
-
-  /**
-   * Create a clone of loaded config data where data is under
-   * the key of loaded config file name
-   *
-   * @returns 
-   */
-  protected cloneDataForGetMethod(): object {
-    // Create a clone of the data
-    const sourceName = this.getSourceName();
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return {
-      [sourceName]: Object.assign({}, this.data)
-    };
-  }
-
-  /**
    * Allow retrieval of the loaded config data using the dot notation. Ie:
-   * - 'config.db.username'
+   * - 'db.username'
    * 
-   * The first entry `config` in this case is the name of the file loaded `config.json`.
+   * If [IConfigStoreOptions.loadAll] flag is set, the name of the file would be the first
+   * key.  Ie: if loaded config file is called `config.json`, the dot notation would be:
    * 
-   * This method is not optmized and created for retro compability of FPLogger.  Avoid
+   * - `config.db.name`
+   * 
+   * This method is not optmized and created for retro compability of FP8Config class.  Avoid
    * this method and use an actual configuration class instead.
    * 
    * @param path 
@@ -134,10 +94,10 @@ export class ConfigStore<T extends object> {
     // source: https://stackoverflow.com/a/19048967/2355087
     const keys = path.split(".");
 
+    // Create a clone of the data so that result can be built
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let obj: any = this.cloneDataForGetMethod();
+    let obj: any = Object.assign({}, this.data);
     localDebug(() => `ConfigStore.get obj: ${JSON.stringify(obj)}`, 'ConfigStore.get');
-
 
     while (keys.length) {
       const currentKey = keys.shift();
