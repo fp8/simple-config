@@ -11,6 +11,12 @@ describe('core', () => {
             expect(config.configJson.name).eql('utest/app.json');
         });
 
+        it('default: test-yaml env', () => {
+            const config = readConfig('test-yaml');
+            expect(config.source?.endsWith('etc/test-yaml/app.yaml')).to.be.true;
+            expect(config.configJson.name).eql('test-yaml/app.yaml');
+        });
+
         // config.json is read when app.json doesn't exists
         it('default: test env', () => {
             const config = readConfig('test');
@@ -23,6 +29,12 @@ describe('core', () => {
             const config = readConfig('utest', 'config.json');
             expect(config.source?.endsWith('etc/utest/config.json')).to.be.true;
             expect(config.configJson.name).eql('utest/config.json');
+        });
+
+        it('default: test-yaml env', () => {
+            const config = readConfig('test-yaml', 'config.yaml');
+            expect(config.source?.endsWith('etc/test-yaml/config.yaml')).to.be.true;
+            expect(config.configJson.name).eql('test-yaml/config.yaml');
         });
 
         // read from outside of the FP8_ENV

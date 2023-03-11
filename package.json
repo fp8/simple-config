@@ -46,7 +46,8 @@
         "class-transformer": "^0.5.1",
         "class-validator": "^0.14.0",
         "jlog-facade": "^0.6.0",
-        "reflect-metadata": "^0.1.13"
+        "reflect-metadata": "^0.1.13",
+        "yaml": "^2.2.1"
     },
     "peerDependencies": {
         "class-transformer": "^0.5.1",

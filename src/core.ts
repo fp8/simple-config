@@ -1,5 +1,6 @@
 import * as fs from 'fs';
 import * as nodePath from 'path';
+import {parse as parseYaml} from 'yaml';
 
 import {
     localDebug,
@@ -8,10 +9,30 @@ import {
 
 export const logger = LoggerFactory.getLogger('light-config');
 
-
 const DEFAULT_CONFIG_FILE_NAMES = ['app', 'config'];
-const DEFAULT_CONFIG_FILE_EXTENSIONS = ['.json'];
+const DEFAULT_CONFIG_FILE_EXTENSIONS = ['.json', '.yaml'];
 const DEFAULT_CONFIG_DIR_NAMES = ['etc', 'config'];
+
+/**
+ * Check the config file extension based on DEFAULT_CONFIG_FILE_EXTENSIONS
+ *
+ * @param filepath 
+ * @returns 
+ */
+function checkConfigFileExtension(filepath: string): boolean {
+    let valid = false;
+    for (const ext of DEFAULT_CONFIG_FILE_EXTENSIONS) {
+        if (filepath.endsWith(ext)) {
+            valid = true;
+            break;
+        }
+    }
+
+    if (!valid) {
+        localDebug(() => `${filepath} not loaded as extension not one of ${DEFAULT_CONFIG_FILE_EXTENSIONS}`);
+    }
+    return valid;
+}
 
 /**
  * Load json from from file system.  If file passed doesn't exists or doesn't ends with .json,
@@ -20,17 +41,24 @@ const DEFAULT_CONFIG_DIR_NAMES = ['etc', 'config'];
  * @param filepath 
  * @returns 
  */
-export function loadJsonFile(filepath: string): IJson | undefined {
-    if (!filepath.endsWith('.json')) {
-        localDebug(() => `loadJsonFile not loading ${filepath} as it doesn't end with .json`);
+export function loadConfigFile(filepath: string): IJson | undefined {
+    if (!checkConfigFileExtension(filepath)) {
         return undefined;
     }
 
+    const content = fs.readFileSync(filepath, {encoding: 'utf8'});
+    localDebug(() => `data read: ${content}`);
+
     let loaded: IJson;
     try {
-        const content = fs.readFileSync(filepath, {encoding: 'utf8'});
-        localDebug(() => `data read: ${content}`);
-        loaded = JSON.parse(content);
+        if (filepath.endsWith('.yaml') || filepath.endsWith('.yml')) {
+            loaded = parseYaml(content);
+        } else if (filepath.endsWith('.json')) {
+            loaded = JSON.parse(content);
+        } else {
+            // If unexpected extension then just return the content
+            loaded = {content};
+        }
     } catch(e) {
         logger.error(`Failed to config file ${filepath}`, e as Error);
         return undefined;
@@ -38,6 +66,7 @@ export function loadJsonFile(filepath: string): IJson | undefined {
 
     return loaded;
 }
+
 
 
 /**
@@ -118,7 +147,7 @@ export function readConfig(
       const absPath = nodePath.resolve(path);
       localDebug(() => `Looking for file ${absPath}`);
         if (fs.existsSync(absPath)) {
-            const jsonFile = loadJsonFile(absPath);
+            const jsonFile = loadConfigFile(absPath);
             if (jsonFile !== undefined) {
                 configJson = jsonFile;
                 source = absPath;
