@@ -13,6 +13,31 @@ const DEFAULT_CONFIG_FILE_NAMES = ['app', 'config'];
 const DEFAULT_CONFIG_FILE_EXTENSIONS = ['.json', '.yaml'];
 const DEFAULT_CONFIG_DIR_NAMES = ['etc', 'config'];
 
+interface IConfigFileReadResult {
+    source: string | undefined;
+    configDir: string | undefined;
+    configJson: IJson;
+}
+
+export interface IReadConfigOptions {
+    /**
+     * Provide env string to use to look for config file.  Default to `FP8_ENV` environmental variable
+     * or `local`.
+     */
+    env?: string;
+  
+    /**
+     * Set the name of config file to read.  Must be a .json file and defaults to `config.json`
+     */
+    configFileName?: string;
+  
+    /**
+     * If set, load all config files from the config directory
+     */
+    loadAll?: boolean
+}
+
+
 /**
  * Check the config file extension based on DEFAULT_CONFIG_FILE_EXTENSIONS
  *
@@ -126,18 +151,14 @@ function generateConfigFilesToSearch(fp8env: string, filename: string | undefine
     return paths;
 }
 
-
-
 /**
- * Read the config file from the ../../etc/${FP8_ENV}/config.json
+ * Read the primary config file based on the FP8_ENV and optional file name
+ *
+ * @param fp8env 
+ * @param filename 
+ * @returns 
  */
-export function readConfig(
-    env?: string, filename?: string
-): { configJson: IJson, source?: string, configDir?: string } {
-    // Set paths to find the logger.json file
-    const fp8env = env ?? process.env.FP8_ENV ?? 'local';
-
-    // Build the configuration file to look for of pattern ./[etc|config]/[.|${fp8env}]/[app|config].[json|yaml]
+function readPrimaryConfigFile(fp8env: string, filename: string | undefined): IConfigFileReadResult {
     const paths = generateConfigFilesToSearch(fp8env, filename);
 
     // Return first config found from configured paths
@@ -158,7 +179,22 @@ export function readConfig(
             }
         }
     }
+    return { configJson, source, configDir };
+}
+
+
+
+/**
+ * Read the config file from the ../../etc/${FP8_ENV}/config.json
+ */
+export function readConfig(options: IReadConfigOptions): { configJson: IJson, source?: string, configDir?: string } {
+    // Set paths to find the logger.json file
+    const fp8env = options.env ?? process.env.FP8_ENV ?? 'local';
+
+    // Build the configuration file to look for of pattern ./[etc|config]/[.|${fp8env}]/[app|config].[json|yaml]
+    const { configJson, source, configDir } = readPrimaryConfigFile(fp8env, options.configFileName);
 
     // Return 
     return { configJson, source, configDir };
 }
+

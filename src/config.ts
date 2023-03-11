@@ -1,34 +1,18 @@
 import { localDebug, IJson, KV, isArray, isEmpty } from 'jlog-facade';
 
 import { createEntityAndValidate, EntityCreationError } from './entity';
-import { logger, readConfig } from './core';
+import { logger, readConfig, IReadConfigOptions } from './core';
 
 
 
 /**
  * ConfigStore creation option
  */
-export interface IConfigStoreOptions {
-  /**
-   * Provide env string to use to look for config file.  Default to `FP8_ENV` environmental variable
-   * or `local`.
-   */
-  env?: string;
-
-  /**
-   * Set the name of config file to read.  Must be a .json file and defaults to `config.json`
-   */
-  configFileName?: string;
-
+export interface IConfigStoreOptions extends IReadConfigOptions {
   /**
    * Addtional entries to be added to data loaded
    */
   entries?: IJson
-
-  /**
-   * If set, load all config files from the config directory
-   */
-  loadAll?: boolean
 }
 
 /**
@@ -57,7 +41,7 @@ export class ConfigStore<T extends object> {
 
   constructor(type?: { new(): T; }, options?: IConfigStoreOptions) {
     // Load data from config file, expect configJson to be at least {}
-    const { configJson, source, configDir } = readConfig(options?.env, options?.configFileName);
+    const { configJson, source, configDir } = readConfig(options ?? {});
 
     // Append to loaded data if necesary
     let configDataToUse: object;
