@@ -1,4 +1,4 @@
-import { IsString, MinLength, ValidateNested } from 'class-validator';
+import { IsOptional, IsString, Min, MinLength, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class DatabaseConfig {
@@ -16,5 +16,34 @@ export class ConfigData {
     @ValidateNested()
     db!: DatabaseConfig;
 
+    city?: string;
+}
+
+export class ExtraConfig {
+    @MinLength(5)
+    name!: string;
+
+    @Type(() => DatabaseConfig)
+    @ValidateNested()
+    db!: DatabaseConfig;
+
+    @IsString()
+    @MinLength(5)
+    extra!: string;
+}
+
+export class ConfigDataAll {
+    @Type(() => ConfigData)
+    @ValidateNested()
+    config!: ConfigData;
+
+    @Type(() => ExtraConfig)
+    @ValidateNested()
+    extraConfig!: ExtraConfig
+
+    badConfig!: Record<string, string>
+
+    @IsOptional()
+    @IsString()
     city?: string;
 }

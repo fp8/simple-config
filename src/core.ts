@@ -40,6 +40,18 @@ export interface IReadConfigOptions {
     loadAll?: boolean
 }
 
+/**
+ * Return the filename trucating the extension
+ * 
+ * @param source 
+ * @returns 
+ */
+function getFilenameWithoutExtension(source: string) {
+    const parts = nodePath.parse(source);
+    const primaryName = parts.name;
+    return primaryName;
+}
+
 
 /**
  * Check the config file extension based on DEFAULT_CONFIG_FILE_EXTENSIONS
@@ -195,6 +207,21 @@ function readAllConfigFiles(primaryFile: string, configDir: string): IJson {
 
     const configFiles = fs.readdirSync(configDir);
 
+    for (const file of configFiles) {
+        const configFile = nodePath.join(configDir, file);
+
+        // don't load the primary config file again
+        if (configFile.endsWith(primaryFile)) {
+            continue;
+        }
+
+        // Attempt to load the config file
+        const data = loadConfigFile(configFile);
+        if (data !== undefined) {
+            const name = getFilenameWithoutExtension(configFile);
+            result[name] = data;
+        }
+    }
 
     return result;
 }
@@ -212,8 +239,7 @@ export function readConfig(options: IReadConfigOptions): IConfigFileReadResult {
     // Only load all configs if primary config found
     if (options.loadAll === true && source !== undefined && configDir !== undefined) {
         // get the name of primary config file without extension
-        const parts = nodePath.parse(source);
-        const primaryName = parts.name;
+        const primaryName = getFilenameWithoutExtension(source);
 
         // Load all other config
         const configData = readAllConfigFiles(source, configDir);
