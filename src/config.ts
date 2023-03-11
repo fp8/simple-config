@@ -25,6 +25,11 @@ export interface IConfigStoreOptions {
    * Addtional entries to be added to data loaded
    */
   entries?: IJson
+
+  /**
+   * If set, load all config files from the config directory
+   */
+  loadAll?: boolean
 }
 
 /**
