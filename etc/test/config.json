@@ -1,3 +1,4 @@
 {
-    "name": "test/config.json"
+    "name": "test/config.json",
+    "fp8TestVal": "{{ENV.FP8_TESTVAL}}"
 }

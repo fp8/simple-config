@@ -1,5 +1,6 @@
 import * as fs from 'fs';
 import * as nodePath from 'path';
+import * as mustache from 'mustache';
 import { parse as parseYaml } from 'yaml';
 
 import {
@@ -12,11 +13,18 @@ export const logger = LoggerFactory.getLogger('light-config');
 const DEFAULT_CONFIG_FILE_NAMES = ['app', 'config'];
 const DEFAULT_CONFIG_FILE_EXTENSIONS = ['.json', '.yaml'];
 const DEFAULT_CONFIG_DIR_NAMES = ['etc', 'config'];
+const DEFAULT_MUSTACHE_TAGS: [string, string] = ['{{', '}}'];
 
 interface IConfigFileReadResult {
     source: string | undefined;
     configDir: string | undefined;
     configJson: IJson;
+    templateTagsFound: boolean;
+}
+
+interface ILoadConfigResult {
+    data: IJson,
+    templateTagsFound: boolean;
 }
 
 /**
@@ -37,7 +45,12 @@ export interface IReadConfigOptions {
     /**
      * If set, load all config files from the config directory
      */
-    loadAll?: boolean
+    loadAll?: boolean;
+
+    /**
+     * Define open and closing tag for mustache.  Default to ['{{', '}}']
+     */
+    templateTags?: [string, string];
 }
 
 /**
@@ -81,31 +94,42 @@ function checkConfigFileExtension(filepath: string): boolean {
  * @param filepath 
  * @returns 
  */
-export function loadConfigFile(filepath: string): IJson | undefined {
+export function loadConfigFile(filepath: string, templateTags?: [string, string]): ILoadConfigResult | undefined {
     // Make sure that config file to be loaded ends with the expected extension
     if (!checkConfigFileExtension(filepath)) {
         return undefined;
     }
 
-    let loaded: IJson;
+    // templateTags shouldn't ever be undefined
+    if (templateTags === undefined) {
+        templateTags = DEFAULT_MUSTACHE_TAGS;
+    } 
+
+    let data: IJson;
+    let templateTagsFound = false;
     try {
         const content = fs.readFileSync(filepath, { encoding: 'utf8' });
+        if (content.includes(templateTags[0])) {
+            templateTagsFound = true;
+        }
         localDebug(() => `data read: ${content}`);
 
         if (filepath.endsWith('.yaml') || filepath.endsWith('.yml')) {
-            loaded = parseYaml(content);
+            data = parseYaml(content);
         } else if (filepath.endsWith('.json')) {
-            loaded = JSON.parse(content);
+            data = JSON.parse(content);
         } else {
             // If unexpected extension then just return the content
-            loaded = { content };
+            data = { content };
         }
     } catch (e) {
         logger.error(`Failed to config file ${filepath}`, e as Error);
         return undefined;
     }
 
-    return loaded;
+    return {
+        data, templateTagsFound
+    };
 }
 
 /**
@@ -143,7 +167,7 @@ function generateConfigFiles(filename: string | undefined) {
  * @param fp8env 
  * @returns 
  */
-function generateConfigFilesToSearch(fp8env: string, filename: string | undefined) {
+function generateConfigFilesToSearch(fp8env: string, filename?: string) {
     const configFiles = generateConfigFiles(filename);
 
     // Defind path to search for the config files
@@ -171,8 +195,10 @@ function generateConfigFilesToSearch(fp8env: string, filename: string | undefine
  * @param filename 
  * @returns 
  */
-function readPrimaryConfigFile(fp8env: string, filename: string | undefined): IConfigFileReadResult {
+function readPrimaryConfigFile(fp8env: string, options: IReadConfigOptions): IConfigFileReadResult {
+    const filename = options.configFileName;
     const paths = generateConfigFilesToSearch(fp8env, filename);
+    let templateTagsFound = false;
 
     // Return first config found from configured paths
     let source: string | undefined;
@@ -182,17 +208,19 @@ function readPrimaryConfigFile(fp8env: string, filename: string | undefined): IC
         const absPath = nodePath.resolve(path);
         localDebug(() => `Looking for file ${absPath}`);
         if (fs.existsSync(absPath)) {
-            const jsonFile = loadConfigFile(absPath);
-            if (jsonFile !== undefined) {
-                configJson = jsonFile;
+            const loadedResult = loadConfigFile(absPath, options.templateTags);
+            if (loadedResult !== undefined) {
+                configJson = loadedResult.data;
                 source = absPath;
                 configDir = nodePath.dirname(source);
+                templateTagsFound = loadedResult.templateTagsFound;
+
                 logger.info(`Config found and read from ${absPath}`);
                 break;
             }
         }
     }
-    return { configJson, source, configDir };
+    return { configJson, source, configDir, templateTagsFound};
 }
 
 /**
@@ -202,10 +230,11 @@ function readPrimaryConfigFile(fp8env: string, filename: string | undefined): IC
  * @param primaryFile 
  * @param configDir 
  */
-function readAllConfigFiles(primaryFile: string, configDir: string): IJson {
-    const result: IJson = {};
+function readAllConfigFiles(primaryFile: string, configDir: string, templateTags?: [string, string]): ILoadConfigResult {
+    const data: IJson = {};
 
     const configFiles = fs.readdirSync(configDir);
+    let templateTagsFound = false;
 
     for (const file of configFiles) {
         const configFile = nodePath.join(configDir, file);
@@ -216,26 +245,32 @@ function readAllConfigFiles(primaryFile: string, configDir: string): IJson {
         }
 
         // Attempt to load the config file
-        const data = loadConfigFile(configFile);
-        if (data !== undefined) {
+        const loadedResult = loadConfigFile(configFile, templateTags);
+        if (loadedResult !== undefined) {
             const name = getFilenameWithoutExtension(configFile);
-            result[name] = data;
+            if (loadedResult.templateTagsFound) {
+                templateTagsFound = true;
+            }
+            data[name] = loadedResult.data;
         }
     }
 
-    return result;
+    return {
+        data,
+        templateTagsFound
+    };
 }
 
 /**
  * Read the config file with pattern of ./[etc|config]/[.|${fp8env}]/[app|config].[json|yaml].
  * Read all config file in the configDir if options.loadAll is set
  */
-function readConfigFiles(options: IReadConfigOptions): IConfigFileReadResult {
+export function readConfigFiles(options: IReadConfigOptions): IConfigFileReadResult {
     // Set paths to find the logger.json file
     const fp8env = options.env ?? process.env.FP8_ENV ?? 'local';
 
     // Build the configuration file to look for of pattern ./[etc|config]/[.|${fp8env}]/[app|config].[json|yaml]
-    const { configJson, source, configDir } = readPrimaryConfigFile(fp8env, options.configFileName);
+    const { configJson, source, configDir, templateTagsFound } = readPrimaryConfigFile(fp8env, options);
 
     // Only load all configs if primary config found
     if (options.loadAll === true && source !== undefined && configDir !== undefined) {
@@ -243,14 +278,24 @@ function readConfigFiles(options: IReadConfigOptions): IConfigFileReadResult {
         const primaryName = getFilenameWithoutExtension(source);
 
         // Load all other config
-        const configData = readAllConfigFiles(source, configDir);
+        const loadedConfig = readAllConfigFiles(source, configDir, options.templateTags);
 
         // Add primary config to the configData
+        const configData = loadedConfig.data;
         configData[primaryName] = configJson;
 
-        return { configJson: configData, source, configDir };
+        return {
+            configJson: loadedConfig.data,
+            source, configDir,
+            templateTagsFound: templateTagsFound || loadedConfig.templateTagsFound
+        };
     } else {
-        return { configJson, source, configDir };
+        return {
+            configJson,
+            source,
+            configDir, 
+            templateTagsFound
+        };
     }
 }
 
@@ -261,6 +306,22 @@ function readConfigFiles(options: IReadConfigOptions): IConfigFileReadResult {
  * @returns 
  */
 export function readConfig(options: IReadConfigOptions): IConfigFileReadResult {
+    // Option tags must always exists
+    if (options.templateTags === undefined) {
+        options.templateTags = DEFAULT_MUSTACHE_TAGS;
+    }
+    
+    /* eslint-disable @typescript-eslint/no-explicit-any */
+    /**
+     * Set render options:
+     * - disable html espace
+     * - tags from options.templateTags
+     */
+    const mustacheOptions: mustache.RenderOptions = {
+        escape: (value: any) => value,
+        tags: options.templateTags
+    };
+
     const result = readConfigFiles(options);
 
     // add env variables into data to be loaded for mustache rendering
