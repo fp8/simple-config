@@ -227,9 +227,10 @@ function readAllConfigFiles(primaryFile: string, configDir: string): IJson {
 }
 
 /**
- * Read the config file from the ../../etc/${FP8_ENV}/config.json
+ * Read the config file with pattern of ./[etc|config]/[.|${fp8env}]/[app|config].[json|yaml].
+ * Read all config file in the configDir if options.loadAll is set
  */
-export function readConfig(options: IReadConfigOptions): IConfigFileReadResult {
+function readConfigFiles(options: IReadConfigOptions): IConfigFileReadResult {
     // Set paths to find the logger.json file
     const fp8env = options.env ?? process.env.FP8_ENV ?? 'local';
 
@@ -251,4 +252,19 @@ export function readConfig(options: IReadConfigOptions): IConfigFileReadResult {
     } else {
         return { configJson, source, configDir };
     }
+}
+
+/**
+ * Read and return the config data
+ *
+ * @param options 
+ * @returns 
+ */
+export function readConfig(options: IReadConfigOptions): IConfigFileReadResult {
+    const result = readConfigFiles(options);
+
+    // add env variables into data to be loaded for mustache rendering
+    result.configJson = Object.assign({}, result.configJson, {'ENV': process.env});
+
+    return result;
 }

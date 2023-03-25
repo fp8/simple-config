@@ -66,6 +66,11 @@ function testConfigDataAll(store: ConfigStore<ConfigDataAll>) {
     expect(store.get('.name.')).to.be.undefined;
     expect(store.get('.name.')).to.be.undefined;
   });
+
+  it('ENV', () => {
+    expect(store.get('ENV.FP8_TESTVAL')).to.eql('Eyf04tCAAJ');
+    expect(store.get('ENV.HOSTNAME')).to.eql(process.env.HOSTNAME);
+  });
 }
 
 
@@ -95,7 +100,7 @@ describe('config-all', () => {
       const extraDb: any = store.get('extraConfig.db');
       expect(extraDb.password).to.eql('pwd-LJ7tXjYsF5');
     });
-  
+
     testConfigDataAll(store);
   });
 

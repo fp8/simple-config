@@ -15,9 +15,9 @@
         "lint:ts": "eslint src --ext .ts,.tsx",
         "lint": "yarn lint:ts",
         "info:version": "node scripts/packageInfo.js",
-        "test-lib:unit": "ts-mocha --project test/tsconfig.lib.json -r tsconfig-paths/register 'test/*.spec.ts' 'test/**/*.spec.ts'",
+        "test-lib:unit": "FP8_TESTVAL=Eyf04tCAAJ ts-mocha --project test/tsconfig.lib.json -r tsconfig-paths/register 'test/*.spec.ts' 'test/**/*.spec.ts'",
         "test-lib": "yarn test-lib:unit",
-        "test:unit": "ts-mocha --project test/tsconfig.json -r tsconfig-paths/register 'test/*.spec.ts' 'test/**/*.spec.ts'",
+        "test:unit": "FP8_TESTVAL=Eyf04tCAAJ ts-mocha --project test/tsconfig.json -r tsconfig-paths/register 'test/*.spec.ts' 'test/**/*.spec.ts'",
         "test": "yarn test:unit"
     },
     "devDependencies": {
