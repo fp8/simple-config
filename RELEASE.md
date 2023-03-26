@@ -1,5 +1,10 @@
 # @fp8/simple-config
 
+## 0.4.0 [2023-03-26]
+
+* Added support for mustache templating
+* Added support for environmental variable access
+
 ## 0.3.0 [2023-03-11]
 
 * Added support for loading of yaml file

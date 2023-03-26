@@ -1,3 +1,4 @@
 {
-    "name": "test-yaml/extra.json"
+    "name": "test-yaml/extra.json",
+    "entry": "{{app.fp8TestVal}}"
 }

@@ -107,3 +107,16 @@ class ConfigData {
 
 This option allows additinal entries to be added to the config data.  This is useful if you wish
 to add secret from vaults to config upon application startup.
+
+## Templating
+
+Templating support is done via [mustache](https://mustache.github.io/).
+
+```yaml
+name: url configurator
+domain: example.com
+url: "https://{{domain}}/info"
+env: "ENV.FP8_ENV"
+```
+
+Notice env file can be used as part of templating by prefixing the variable name with `ENV.`.
