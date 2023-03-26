@@ -3,7 +3,7 @@ import { ConfigStore, IConfigStoreOptions } from '@fp8proj';
 import {
   expect, ConfigDataAll,
   ConfigData, DatabaseConfig,
-  ExtraConfig, ConfigDataYaml, JustName
+  ExtraConfig, ConfigDataYaml, JustName, JustNameWithTestEntry, JustNameWithEntry
 } from './testlib';
 
 
@@ -66,6 +66,11 @@ function testConfigDataAll(store: ConfigStore<ConfigDataAll>) {
     expect(store.get('.name.')).to.be.undefined;
     expect(store.get('.name.')).to.be.undefined;
   });
+
+  it('ENV', () => {
+    expect(store.get('ENV.FP8_TESTVAL')).to.eql('Eyf04tCAAJ');
+    expect(store.get('ENV.HOSTNAME')).to.eql(process.env.HOSTNAME);
+  });
 }
 
 
@@ -95,7 +100,7 @@ describe('config-all', () => {
       const extraDb: any = store.get('extraConfig.db');
       expect(extraDb.password).to.eql('pwd-LJ7tXjYsF5');
     });
-  
+
     testConfigDataAll(store);
   });
 
@@ -133,9 +138,13 @@ describe('config-all', () => {
     });
 
     it('ConfigDataYaml.app', () => {
-      expect(store.data.app).to.be.instanceOf(JustName);
+      expect(store.data.app).to.be.instanceOf(JustNameWithTestEntry);
+
       expect(store.data.app.name).to.eql('test-yaml/app.yaml');
       expect(store.get('app.name')).to.eql('test-yaml/app.yaml');
+
+      expect(store.data.app.fp8TestVal).to.eql('Eyf04tCAAJ');
+      expect(store.get('app.fp8TestVal')).to.eql('Eyf04tCAAJ');
     });
 
     it('ConfigDataYaml.config', () => {
@@ -145,9 +154,13 @@ describe('config-all', () => {
     });
 
     it('ConfigDataYaml.extra', () => {
-      expect(store.data.extra).to.be.instanceOf(JustName);
+      expect(store.data.extra).to.be.instanceOf(JustNameWithEntry);
+
       expect(store.data.extra.name).to.eql('test-yaml/extra.json');
       expect(store.get('extra.name')).to.eql('test-yaml/extra.json');
+
+      expect(store.data.extra.entry).to.eql('Eyf04tCAAJ');
+      expect(store.get('extra.entry')).to.eql('Eyf04tCAAJ');
     });
 
   });

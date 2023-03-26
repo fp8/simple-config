@@ -1,1 +1,2 @@
 name: test-yaml/app.yaml
+fp8TestVal: "{{ENV.FP8_TESTVAL}}"

@@ -54,16 +54,28 @@ export class JustName {
     name!: string;
 }
 
+export class JustNameWithTestEntry extends JustName {
+    @IsString()
+    @MinLength(3)
+    fp8TestVal!: string;
+}
+
+export class JustNameWithEntry extends JustName {
+    @IsString()
+    @MinLength(3)
+    entry!: string;
+}
+
 export class ConfigDataYaml {
-    @Type(() => JustName)
+    @Type(() => JustNameWithTestEntry)
     @ValidateNested()
-    app!: JustName;
+    app!: JustNameWithTestEntry;
 
     @Type(() => JustName)
     @ValidateNested()
     config!: JustName
 
-    @Type(() => JustName)
+    @Type(() => JustNameWithEntry)
     @ValidateNested()
-    extra!: JustName
+    extra!: JustNameWithEntry
 }

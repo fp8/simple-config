@@ -3,7 +3,9 @@ import { ConfigStore } from '@fp8proj';
 import {expect, ConfigData, DatabaseConfig} from './testlib';
 import { EntityCreationError } from '@fp8proj';
 
-
+/**
+ * Test the config loaded from ./etc/local
+ */
 describe('config', () => {
   describe('no validation', () => {
     const store = new ConfigStore<ConfigData>(undefined, {entries: { city: 'Rome-QjickF4JAF'}});
