@@ -1,4 +1,10 @@
-import { IsOptional, IsString, Min, MinLength, ValidateNested } from 'class-validator';
+import {
+    IsOptional, MinLength,
+    IsAlpha, IsString, 
+    ValidateNested,
+    IsBase64,
+    IsNotEmpty
+} from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class DatabaseConfig {
@@ -78,4 +84,26 @@ export class ConfigDataYaml {
     @Type(() => JustNameWithEntry)
     @ValidateNested()
     extra!: JustNameWithEntry
+}
+
+export class BadConfigData {
+    @IsAlpha()
+    @MinLength(5)
+    name!: string;
+
+    @MinLength(20)
+    @IsBase64()
+    key64!: string;
+
+    @Type(() => ExtraConfig)
+    @ValidateNested()
+    @IsNotEmpty()
+    extra!: ExtraConfig;
+
+    @Type(() => DatabaseConfig)
+    @ValidateNested()
+    db!: DatabaseConfig;
+
+    @IsString()
+    city!: string;
 }
