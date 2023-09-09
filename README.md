@@ -120,3 +120,20 @@ env: "ENV.FP8_ENV"
 ```
 
 Notice env file can be used as part of templating by prefixing the variable name with `ENV.`.
+
+## Validation
+
+The config store will always validate the loaded config if following syntax is used:
+
+```typescript
+const store = new ConfigStore(ConfigData);
+```
+
+However, if following syntax is used, the validation will be skipped:
+
+```typescript
+const store = new ConfigStore<ConfigData>();
+```
+
+Upon validation error, the [EntityCreationError](https://fp8.github.io/simple-config/classes/EntityCreationError.html) is throw. To
+see what fields fails the validation, use `EntityCreationError.fields` property.
