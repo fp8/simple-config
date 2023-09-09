@@ -1,5 +1,11 @@
 # @fp8/simple-config
 
+## 0.5.0 [2023-09-09]
+
+* Added `EntityCreationError.fields` with dot based notation for nested field name for easier
+  error message generation by the user.
+* [breaking] Renamed `EntityCreationError.details` to `EntityCreationError.rawValidationError`
+
 ## 0.4.0 [2023-03-26]
 
 * Added support for mustache templating

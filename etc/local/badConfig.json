@@ -1,7 +1,12 @@
 {
-    "name": "bad",
-    "db": {
-        "username": "user-lOVx1VJiEP",
-        "password": 123
-    }
+    "name": "bad2",
+    "key64": "eJOlXuA/R/yjLw",
+    "extra": {
+        "name": "bad3",
+        "db": {
+            "username": "user-lOVx1VJiEP",
+            "password": 123
+        }
+    },
+    "foo": "bar"
 }

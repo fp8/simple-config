@@ -18,8 +18,8 @@ function testConfigDataAll(store: ConfigStore<ConfigDataAll>) {
     expect(store.data.config.name).to.eql('light-config-local');
     expect(store.get('config.name')).to.eql('light-config-local');
 
-    expect(store.data.badConfig.name).to.eql('bad');
-    expect(store.get('badConfig.name')).to.eql('bad');
+    expect(store.data.badConfig.name).to.eql('bad2');
+    expect(store.get('badConfig.name')).to.eql('bad2');
 
     expect(store.data.extraConfig.name).to.eql('extraConfig');
     expect(store.get('extraConfig.name')).to.eql('extraConfig');

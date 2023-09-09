@@ -1,0 +1,39 @@
+{
+    "name": {
+        "value": "bad2",
+        "constraints": {
+            "minLength": "name must be longer than or equal to 5 characters",
+            "isAlpha": "name must contain only letters (a-zA-Z)"
+        }
+    },
+    "key64": {
+        "value": "eJOlXuA/R/yjLw",
+        "constraints": {
+            "isBase64": "key64 must be base64 encoded",
+            "minLength": "key64 must be longer than or equal to 20 characters"
+        }
+    },
+    "extra.name": {
+        "value": "bad3",
+        "constraints": {
+            "minLength": "name must be longer than or equal to 5 characters"
+        }
+    },
+    "extra.db.password": {
+        "value": 123,
+        "constraints": {
+            "isString": "password must be a string"
+        }
+    },
+    "extra.extra": {
+        "constraints": {
+            "minLength": "extra must be longer than or equal to 5 characters",
+            "isString": "extra must be a string"
+        }
+    },
+    "city": {
+        "constraints": {
+            "isString": "city must be a string"
+        }
+    }
+}
