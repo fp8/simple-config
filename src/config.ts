@@ -62,7 +62,7 @@ export class ConfigStore<T extends object> {
         data = createEntityAndValidate(type, configDataToUse)
       } catch (err) {
         if (err instanceof EntityCreationError) {
-          logger.debug(err, KV.of('validationError', err.details));
+          logger.debug(err, KV.of('validationError', err.rawValidationError));
         } else {
           logger.debug(`createAndValidate of config data failed: ${err}`);
         }

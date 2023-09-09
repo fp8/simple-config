@@ -1,2 +1,5 @@
 export * from './config';
-export {createEntityAndValidate, EntityCreationError} from './entity';
+export {
+    createEntityAndValidate, EntityCreationError,
+    IFieldValidationDetail, IFieldValidationError
+} from './entity';
