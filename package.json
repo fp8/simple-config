@@ -1,6 +1,6 @@
 {
     "name": "@fp8/simple-config",
-    "version": "0.5.0",
+    "version": "0.5.1",
     "description": "Simple Config Reader",
     "main": "lib/index.js",
     "repository": "https://github.com/fp8/simple-config",
@@ -46,7 +46,7 @@
         "@types/mustache": "^4.2.2",
         "class-transformer": "^0.5.1",
         "class-validator": "^0.14.0",
-        "jlog-facade": "^0.6.0",
+        "jlog-facade": "^0.8.0",
         "mustache": "^4.2.0",
         "reflect-metadata": "^0.1.13",
         "yaml": "^2.2.1"

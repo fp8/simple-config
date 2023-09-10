@@ -1,4 +1,4 @@
-import { localDebug, IJson, KV, isArray, isEmpty } from 'jlog-facade';
+import { localDebug, IJson, isArray, isEmpty, Loggable } from 'jlog-facade';
 
 import { createEntityAndValidate, EntityCreationError } from './entity';
 import { logger, readConfig, IReadConfigOptions } from './core';
@@ -62,9 +62,9 @@ export class ConfigStore<T extends object> {
         data = createEntityAndValidate(type, configDataToUse)
       } catch (err) {
         if (err instanceof EntityCreationError) {
-          logger.debug(err, KV.of('validationError', err.rawValidationError));
+          logger.warn('Validation failed for fields:', Loggable.of('fileds', err.fields));
         } else {
-          logger.debug(`createAndValidate of config data failed: ${err}`);
+          logger.warn(`Unknown validation error: ${err}`);
         }
         throw err;
       }

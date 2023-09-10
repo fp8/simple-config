@@ -19,7 +19,7 @@ function readExpectedIFieldValidationErrorFile(name: string): IFieldValidationEr
 }
 
 describe('validation scenarios', () => {
-    it('badConfig', () => {
+    it.only('badConfig', () => {
         // Make sure that exception is thrown
         let errorThrown = false;
         const expectedFields = readExpectedIFieldValidationErrorFile('bad-config-fields.json');

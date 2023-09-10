@@ -1,5 +1,9 @@
 # @fp8/simple-config
 
+## 0.5.1 [2023-09-10]
+
+* Added warning log on validation failure
+
 ## 0.5.0 [2023-09-09]
 
 * Added `EntityCreationError.fields` with dot based notation for nested field name for easier

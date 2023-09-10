@@ -21,8 +21,8 @@ export {sinon, chai};
 export * from './test-models';
 
 // Enable logging
-import { SimpleTextDestination } from 'jlog-facade';
-SimpleTextDestination.use();
+import { SimpleTextDestination, LogLevel } from 'jlog-facade';
+SimpleTextDestination.use(LogLevel.DEBUG);
 
 // Read data
 export function readJsonFile<T>(filename: string): T {

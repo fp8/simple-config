@@ -984,10 +984,10 @@ isexe@^2.0.0:
   resolved "https://registry.yarnpkg.com/isexe/-/isexe-2.0.0.tgz#e8fbf374dc556ff8947a10dcb0572d633f2cfa10"
   integrity sha512-RHxMLp9lnKHGHRng9QFhRCMbYAcVpn69smSGcq3f36xjgVVWThj4qqLbTLlq7Ssj8B+fIQ1EuCEGI2lKsyQeIw==
 
-jlog-facade@^0.6.0:
-  version "0.6.0"
-  resolved "https://registry.yarnpkg.com/jlog-facade/-/jlog-facade-0.6.0.tgz#fb0f9c44e0bece7254894ddec24a20d6bfda029d"
-  integrity sha512-QrXhgG5Yr3FnC0Yu62GmK3uXF+Whv9ZoUm8I4/dk90QGWMzqUXPUSD8T6X3U7Xv80ai83cEXPDUH1tg6Lmks9g==
+jlog-facade@^0.8.0:
+  version "0.8.0"
+  resolved "https://registry.yarnpkg.com/jlog-facade/-/jlog-facade-0.8.0.tgz#f16650c17f79285fe65609cb8eab5a77a64423f6"
+  integrity sha512-qN/Y44pnqnuqtIA9UuJ0a8UUvTYRnzEvYVS1ZsqDmoidg9ysSODASJL5/yIFSrNyx/y+n7u5Kqxax52F87FjTw==
 
 js-sdsl@^4.1.4:
   version "4.3.0"
