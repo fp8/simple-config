@@ -1,5 +1,10 @@
 # @fp8/simple-config
 
+## 0.6.0 [2024-03-30]
+
+* Added `validateModel`
+* BREAKING: Created `ValidateModelOptions` allowing disabling of validation in place of `ValidatorOptions`
+
 ## 0.5.1 [2023-09-10]
 
 * Added warning log on validation failure

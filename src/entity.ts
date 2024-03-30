@@ -1,8 +1,18 @@
 
 import { validateSync, ValidatorOptions, ValidationError } from 'class-validator';
 import { plainToClass } from 'class-transformer';
+import { IJson, localDebug, isEmpty, TJsonValue, Loggable } from 'jlog-facade';
 
-import { IJson, localDebug, isEmpty, TJsonValue } from 'jlog-facade';
+import { logger } from './core';
+
+/**
+ * Options to be passed to `.validateModel` method.  Extends `ValidatorOptions` from class-validator
+ * with additional `disable` option to skip validation.
+ */
+export interface ValidateModelOptions extends ValidatorOptions {
+    // Disable validation
+    disable?: boolean;
+}
 
 /**
  * Default validation options that does not allow for extra entities not
@@ -13,7 +23,7 @@ import { IJson, localDebug, isEmpty, TJsonValue } from 'jlog-facade';
  * Note: for some odd reason, in order for `forbidNonWhitelisted` to work, `whitelist` must
  * also be enabled.
  */
-const DEFAULT_VALIDATION_OPTIONS: ValidatorOptions = {
+const DEFAULT_VALIDATION_OPTIONS: ValidateModelOptions = {
     forbidUnknownValues: true
 };
 
@@ -32,7 +42,13 @@ export interface IFieldValidationError {
     [field: string]: IFieldValidationDetail;
 }
 
-function* generateIFieldValidationDetail(errors: ValidationError[], parentFields?: string): Generator<[string, IFieldValidationDetail]> {
+/**
+ * Create a simplified version of the validation error with field name and constraints violated
+ * 
+ * @param errors 
+ * @param parentFields 
+ */
+export function* generateIFieldValidationDetail(errors: ValidationError[], parentFields?: string): Generator<[string, IFieldValidationDetail]> {
     for (const error of errors) {
         let field: string;
         if (parentFields) {
@@ -40,7 +56,20 @@ function* generateIFieldValidationDetail(errors: ValidationError[], parentFields
         } else {
             field = error.property;
         }
-    
+
+        /*
+        Intentially skipping the error details when error contains children.  For example, if the we have a structure such as:
+
+        {
+            "name": "John",
+            "address": {
+                "street": "123 Main St",
+                "city": "San Francisco"
+            }
+        }
+
+        If address.city has an error, we just want to report error for address.city and not address.
+        */
         if (error.children === undefined || isEmpty(error.children)) {
             const details =  {
                 value: error.value,
@@ -63,27 +92,50 @@ export class EntityCreationError extends Error {
     public readonly _raw: ValidationError[];
     public readonly fields: IFieldValidationError = {};
 
-    constructor(message: string, validationError: ValidationError[]) {
-      super(message);
+    constructor(message: string, validationError: ValidationError[], options?: ErrorOptions) {
+        super(message, options);
 
-      this._raw = validationError;
-      for (const [field, detail] of generateIFieldValidationDetail(validationError)) {
-        this.fields[field] = detail;
-      }
+        this._raw = validationError;
+        for (const [field, detail] of generateIFieldValidationDetail(validationError)) {
+            this.fields[field] = detail;
+        }
 
-      Object.setPrototypeOf(this, EntityCreationError.prototype);
+        this.name = EntityCreationError.name;
     }
-  
+
     /**
      * Return raw ValidationError from class-validator
      */
     public get rawValidationError(): IJson {
-      return JSON.parse(JSON.stringify(this._raw));
+        return JSON.parse(JSON.stringify(this._raw));
     }
 }
 
 
+/**
+ * Validate input model
+ *
+ * @param cls
+ * @param options
+ */
+export function validateModel(
+    cls: object,
+    options: ValidateModelOptions = DEFAULT_VALIDATION_OPTIONS,
+): void {
+    // Skip validation if disabled
+    if (options.disable) {
+        return;
+    }
 
+    // Start validation
+    const validationResult = validateSync(cls, options);
+
+    if (!isEmpty(validationResult)) {
+        const message = `Validation failed for ${cls.constructor.name}`;
+        logger.debug(message, Loggable.of('validationResult', validationResult));
+        throw new EntityCreationError(message, validationResult);
+    }
+}
 
 
 /**
@@ -94,7 +146,7 @@ export class EntityCreationError extends Error {
  * @param options 
  * @returns 
  */
-export function createEntityAndValidate<T extends object>(type: { new(): T; }, data: unknown, options?: ValidatorOptions): T {
+export function createEntityAndValidate<T extends object>(type: { new(): T; }, data: unknown, options?: ValidateModelOptions): T {
     const typeName = type.name;
     let result: T;
     try {
@@ -110,14 +162,7 @@ export function createEntityAndValidate<T extends object>(type: { new(): T; }, d
     }
 
     // Validate ConfigData
-    const validationResult = validateSync(result, options ?? DEFAULT_VALIDATION_OPTIONS);
-    if (!isEmpty(validationResult)) {
-        localDebug(() => `createAndValidate validate failed with data: ${data}`);
-        throw new EntityCreationError(
-            `Validation of ${typeName} failed`,
-            validationResult
-        );
-    }
+    validateModel(result, options ?? DEFAULT_VALIDATION_OPTIONS);
 
     return result;
 }
