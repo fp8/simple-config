@@ -1,6 +1,6 @@
 {
     "name": "@fp8/simple-config",
-    "version": "0.5.1",
+    "version": "0.5.2",
     "description": "Simple Config Reader",
     "main": "lib/index.js",
     "repository": "https://github.com/fp8/simple-config",
@@ -28,32 +28,32 @@
         "@types/node": "^18.15.0",
         "@types/sinon": "^10.0.13",
         "@types/sinon-chai": "^3.2.9",
-        "@typescript-eslint/eslint-plugin": "^5.54.1",
-        "@typescript-eslint/parser": "^5.54.1",
+        "@typescript-eslint/eslint-plugin": "^6.7.21",
+        "@typescript-eslint/parser": "^6.7.21",
         "chai": "^4.3.7",
         "chai-as-promised": "^7.1.1",
-        "eslint": "^8.36.0",
+        "eslint": "^8.57.0",
         "mocha": "^10.2.0",
         "sinon": "^15.0.1",
         "sinon-chai": "^3.7.0",
         "ts-mocha": "^10.0.0",
         "ts-node": "^10.9.1",
         "tsconfig-paths": "^4.1.2",
-        "typedoc": "^0.23.26",
-        "typescript": "^4.9.5"
+        "typedoc": "^0.25.12",
+        "typescript": "~5.3.3"
     },
     "dependencies": {
-        "@types/mustache": "^4.2.2",
+        "@types/mustache": "^4.2.5",
         "class-transformer": "^0.5.1",
-        "class-validator": "^0.14.0",
-        "jlog-facade": "^0.8.0",
+        "class-validator": "^0.14.1",
+        "jlog-facade": "^0.9.1",
         "mustache": "^4.2.0",
-        "reflect-metadata": "^0.1.13",
-        "yaml": "^2.2.1"
+        "reflect-metadata": "^0.2.2",
+        "yaml": "^2.4.1"
     },
     "peerDependencies": {
         "class-transformer": "^0.5.1",
-        "class-validator": "^0.14.0",
-        "reflect-metadata": "^0.1.13"
+        "class-validator": "^0.14.1",
+        "reflect-metadata": "^0.2.2"
     }
 }

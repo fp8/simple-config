@@ -1,5 +1,5 @@
 export * from './config';
 export {
-    createEntityAndValidate, EntityCreationError,
-    IFieldValidationDetail, IFieldValidationError
+    validateModel, createEntityAndValidate, EntityCreationError,
+    ValidateModelOptions, IFieldValidationDetail, IFieldValidationError
 } from './entity';

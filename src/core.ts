@@ -8,7 +8,7 @@ import {
     LoggerFactory, IJson
 } from 'jlog-facade';
 
-export const logger = LoggerFactory.getLogger('light-config');
+export const logger = LoggerFactory.getLogger('simple-config');
 
 const DEFAULT_CONFIG_FILE_NAMES = ['app', 'config'];
 const DEFAULT_CONFIG_FILE_EXTENSIONS = ['.json', '.yaml'];
