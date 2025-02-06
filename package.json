@@ -1,6 +1,6 @@
 {
     "name": "@fp8/simple-config",
-    "version": "0.6.0",
+    "version": "0.6.1",
     "description": "Simple Config Reader",
     "main": "lib/index.js",
     "repository": "https://github.com/fp8/simple-config",
