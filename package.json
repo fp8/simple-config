@@ -1,6 +1,6 @@
 {
     "name": "@fp8/simple-config",
-    "version": "0.5.2",
+    "version": "0.6.0",
     "description": "Simple Config Reader",
     "main": "lib/index.js",
     "repository": "https://github.com/fp8/simple-config",
@@ -37,10 +37,10 @@
         "sinon": "^15.0.1",
         "sinon-chai": "^3.7.0",
         "ts-mocha": "^10.0.0",
-        "ts-node": "^10.9.1",
-        "tsconfig-paths": "^4.1.2",
-        "typedoc": "^0.25.12",
-        "typescript": "~5.3.3"
+        "ts-node": "^10.9.2",
+        "tsconfig-paths": "^4.2.0",
+        "typedoc": "^0.27.6",
+        "typescript": "~5.7.3"
     },
     "dependencies": {
         "@types/mustache": "^4.2.5",
@@ -49,7 +49,7 @@
         "jlog-facade": "^0.9.1",
         "mustache": "^4.2.0",
         "reflect-metadata": "^0.2.2",
-        "yaml": "^2.4.1"
+        "yaml": "^2.7.0"
     },
     "peerDependencies": {
         "class-transformer": "^0.5.1",

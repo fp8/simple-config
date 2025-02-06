@@ -3,6 +3,7 @@
 ## 0.6.0 [2024-03-30]
 
 * Added `validateModel`
+* Removed `ENV` from the `ConfigStore.data` property.  The `ENV` is now only used by templating
 * BREAKING: Created `ValidateModelOptions` allowing disabling of validation in place of `ValidatorOptions`
 
 ## 0.5.1 [2023-09-10]

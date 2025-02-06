@@ -67,10 +67,14 @@ function testConfigDataAll(store: ConfigStore<ConfigDataAll>) {
     expect(store.get('.name.')).to.be.undefined;
   });
 
+  /*
+  The ENV is removed starting from 0.6.x version.
+
   it('ENV', () => {
     expect(store.get('ENV.FP8_TESTVAL')).to.eql('Eyf04tCAAJ');
     expect(store.get('ENV.HOSTNAME')).to.eql(process.env.HOSTNAME);
   });
+  */
 }
 
 
