@@ -1,7 +1,6 @@
 import { localDebug, IJson, isArray, isEmpty, Loggable } from 'jlog-facade';
-import { ValidatorOptions } from 'class-validator';
 
-import { createEntityAndValidate, EntityCreationError } from './entity';
+import { createEntityAndValidate, EntityCreationError, ValidateModelOptions } from './entity';
 import { logger, readConfig, IReadConfigOptions } from './core';
 
 
@@ -17,7 +16,7 @@ export interface IConfigStoreOptions extends IReadConfigOptions {
   /**
    * Optional class-validator options
    */
-  validateOptions?: ValidatorOptions
+  validateModelOptions?: ValidateModelOptions
 }
 
 /**
@@ -64,7 +63,7 @@ export class ConfigStore<T extends object> {
     } else {
       // Validate the internal data if type passed
       try {
-        data = createEntityAndValidate(type, configDataToUse, options?.validateOptions)
+        data = createEntityAndValidate(type, configDataToUse, options?.validateModelOptions);
       } catch (err) {
         if (err instanceof EntityCreationError) {
           logger.warn('Validation failed for fields:', Loggable.of('fileds', err.fields));

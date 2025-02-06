@@ -13,7 +13,7 @@ class BadConfigData {
 }
 
 /**
- * Test the config loaded from ./etc/utest-simple
+ * Test the most simple config scenario loaded from ./etc/utest-simple
  * 
  * Also testing the class without any decorator that would raise error, and
  */
@@ -29,7 +29,7 @@ describe('config-simple', () => {
         }).to.throw('Validation failed for BadConfigData')
     });
     it('Skip Validation', () => {
-        const store = new ConfigStore(BadConfigData, {env: 'utest-simple', validateOptions: {forbidUnknownValues: false}});
+        const store = new ConfigStore(BadConfigData, {env: 'utest-simple', validateModelOptions: {disable: true}});
         expect(store.data.port).to.eql(9589);
         expect(store.get('port')).to.eql(9589);
     });
