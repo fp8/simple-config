@@ -17,12 +17,20 @@ password: password-234
 Define the following class:
 
 ```typescript
+import { IsString } from 'class-validator';
+
 class ConfigData {
+    @IsString()
     name: string;
+    @IsString()
     username: string;
+    @IsString()
     password: string;
 }
 ```
+
+**Note**:  The use of `class-validator` is important as without the decorators you might receive
+           error `{"unknownValue":"an unknown value was passed to the validate function"}`.
 
 Load the config using [ConfigStore](https://fp8.github.io/simple-config/classes/ConfigStore.html):
 
@@ -119,7 +127,7 @@ url: "https://{{domain}}/info"
 env: "ENV.FP8_ENV"
 ```
 
-Notice env file can be used as part of templating by prefixing the variable name with `ENV.`.
+Notice env variable can be used as part of templating by prefixing the variable name with `ENV.`.
 
 ## Validation
 

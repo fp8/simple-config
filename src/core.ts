@@ -362,15 +362,12 @@ export function readConfig(options: IReadConfigOptions): IConfigOutput {
     if (options.templateTags === undefined) {
         options.templateTags = DEFAULT_MUSTACHE_TAGS;
     }
-    
     const result = readConfigFiles(options);
-
-    // add env variables into data to be loaded for mustache rendering
-    result.configJson = Object.assign({}, result.configJson, {'ENV': process.env});
 
     // Process mustache template if needed
     if (result.templateTagsFound) {
-        result.configJson = processMustache(result.configJson, result.configJson, options);
+        const configWithEnv = Object.assign({}, result.configJson, {'ENV': process.env});
+        result.configJson = processMustache(result.configJson, configWithEnv, options);
     }
 
     return result;
