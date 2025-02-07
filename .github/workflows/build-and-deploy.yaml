@@ -1,4 +1,4 @@
-name: Yarn Build, NPM and github pages deploy
+name: Build and Publish NPM and Pages
 
 on:
   release:
