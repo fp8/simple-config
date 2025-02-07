@@ -31,6 +31,12 @@ jobs:
           name: github-pages
           path: build/docs/
 
+      - name: Authenticate with npm
+        run: echo "//registry.npmjs.org/:_authToken=${{ secrets.FP8_NPM_AUTOMATE }}" > ~/.npmrc
+
+      - name: Publish npm
+        run: npm publish --access public
+
   deploy-pages:
     needs: build
 
@@ -47,19 +53,3 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         uses: actions/deploy-pages@v4
-
-  publish-npm:
-    needs: deploy-pages
-
-    permissions:
-      pages: write
-      id-token: write
-
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Authenticate with npm
-        run: echo "//registry.npmjs.org/:_authToken=${{ secrets.FP8_NPM_AUTOMATE }}" > ~/.npmrc
-
-      - name: Publish npm
-        run: npm publish --access public
