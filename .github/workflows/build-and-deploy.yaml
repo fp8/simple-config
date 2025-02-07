@@ -32,7 +32,7 @@ jobs:
           path: build/docs/
 
       - name: Authenticate with npm
-        run: echo "//registry.npmjs.org/:_authToken=${{ secrets.FP8_NPM_PUBLISH }}" > ~/.npmrc
+        run: echo "//registry.npmjs.org/:_authToken=${{ secrets.FP8_NPM_AUTOMATE }}" > ~/.npmrc
 
       - name: Publish npm
         run: npm publish --access public

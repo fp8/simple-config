@@ -3,7 +3,10 @@
     "version": "0.6.1",
     "description": "Simple Config Reader",
     "main": "lib/index.js",
-    "repository": "https://github.com/fp8/simple-config",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/fp8/simple-config.git"
+    },
     "author": "marcos.lin@farport.co",
     "license": "MIT",
     "private": false,
