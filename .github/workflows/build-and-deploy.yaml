@@ -25,19 +25,13 @@ jobs:
         run: yarn build
         shell: bash
 
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
+      - name: Upload static files as artifact
+        id: artifact-docs
+        uses: actions/upload-pages-artifact@v3
         with:
-          name: docs
           path: build/docs/
 
-      - name: Authenticate with npm
-        run: echo "//registry.npmjs.org/:_authToken=${{ secrets.FP8_NPM_AUTOMATE }}" > ~/.npmrc
-
-      - name: Publish npm
-        run: npm publish --access public
-
-  deploy:
+  deploy-pages:
     needs: build
 
     permissions:
@@ -51,9 +45,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Download artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: docs
-
-      - uses: actions/deploy-pages@v2
+      - name: Deploy to GitHub Pages
+        id: artifact-docs
+        uses: actions/deploy-pages@v4
