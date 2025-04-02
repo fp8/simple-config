@@ -1,5 +1,9 @@
 # @fp8/simple-config
 
+## 0.6.2 [2025-04-02]
+
+* Allowed manual creation of `EntityCreationError`
+
 ## 0.6.1 [2025-02-06]
 
 * Added `validateModelOptions` to `IConfigStoreOptions` allowing disabling of validation upon

@@ -1,7 +1,7 @@
 import {expect} from './testlib';
 
 import { ValidationError } from 'class-validator';
-import { generateIFieldValidationDetail } from '@fp8proj/entity';
+import { generateIFieldValidationDetail, EntityCreationError } from '@fp8proj/entity';
 
 
 describe('models.createAndValidate', () => {
@@ -67,6 +67,38 @@ describe('models.createAndValidate', () => {
             const result2 = generator.next();
             expect(result2.value).to.be.undefined;
             expect(result2.done).to.be.true;
+        });
+
+        it('EntityCreationError from ValidationError', () => {
+            const validationError = new ValidationError();
+            validationError.property = 's5iUkXkzTd_property';
+            validationError.value = 'a1SSmDVS4o_value';
+            validationError.constraints = { IsArray: 'error-CySY0i07Op' };
+
+            const err = EntityCreationError.fromValidationError('cdC6gloPQW Error', validationError);
+
+            expect(err.message).to.equal('cdC6gloPQW Error');
+            expect(err.fields).to.eql({
+                s5iUkXkzTd_property: {
+                    value: 'a1SSmDVS4o_value',
+                    constraints: {
+                        IsArray: 'error-CySY0i07Op'
+                    }
+                }
+            });
+        });
+
+        it('EntityCreationError manual', () => {
+            const err = EntityCreationError.from('Error kIhQGkApXB not a string', 'IsString', 'name', 123);
+            expect(err.message).to.equal('Error kIhQGkApXB not a string');
+            expect(err.fields).to.eql({
+                name: {
+                    value: 123,
+                    constraints: {
+                        IsString: 'Error kIhQGkApXB not a string'
+                    }
+                }
+            });
         });
     });
 });

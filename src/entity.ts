@@ -92,6 +92,36 @@ export class EntityCreationError extends Error {
     public readonly _raw: ValidationError[];
     public readonly fields: IFieldValidationError = {};
 
+    /**
+     * Create an EntityCreationError manually from message and property
+     * 
+     * @param message Error message that serve as error message as well as error for the constraint
+     * @param constraint constraint from class-transformer.  E.g.: IsString, IsDate, etc
+     * @param property The property name that is being validated
+     * @param value Value passed to the property
+     * @returns 
+     */
+    static from(message: string, constraint: string, property: string, value: unknown): EntityCreationError {
+        const validationError = new ValidationError();
+        validationError.property = property;
+        validationError.value = value;
+        validationError.constraints = {
+            [constraint]: message
+        };
+        return EntityCreationError.fromValidationError(message, validationError);
+    }
+
+    /**
+     * Create an instance of EntityCreationError by specifying a message and passing a ValidationError
+     *
+     * @param message 
+     * @param validationError 
+     * @returns 
+     */
+    static fromValidationError(message: string, validationError: ValidationError): EntityCreationError {
+        return new EntityCreationError(message, [validationError]);
+    }
+
     constructor(message: string, validationError: ValidationError[], options?: ErrorOptions) {
         super(message, options);
 
@@ -152,8 +182,12 @@ export function createEntityAndValidate<T extends object>(type: { new(): T; }, d
     try {
         result = plainToClass(type, data);
     } catch (e) {
-        if (e instanceof Error) {
-            localDebug(() => `createAndValidate create failed with data: ${data}`);
+        localDebug(() => `createAndValidate create failed with data: ${data}`);
+        if (e instanceof EntityCreationError) {
+            throw e;
+        } else if (e instanceof ValidationError) {
+            throw EntityCreationError.fromValidationError(`ValidationError when creating an instance of ${typeName}`, e);
+        } else if (e instanceof Error) {
             throw new EntityCreationError(`Failed to create instance of ${typeName}: ${e.message}`, []);
         } else {
             // If not error, not sure what this is.
