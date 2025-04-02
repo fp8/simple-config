@@ -3,7 +3,7 @@ import {
     IsAlpha, IsString, 
     ValidateNested,
     IsBase64,
-    IsNotEmpty
+    IsNotEmpty,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 
