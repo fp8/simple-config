@@ -167,6 +167,28 @@ export function validateModel(
     }
 }
 
+/**
+ * An interface used to allow caller to implement a post create processing
+ */
+export interface IEntityCreator {
+    /**
+     * A private method that is ran after entity creation.  If need to raise
+     * error, raise and EntityCreationError
+     * @returns 
+     */
+    _postCreateProcessing(): void
+}
+
+/**
+ * if _postCreateProcessing method exists, execute it
+ * @param input 
+ */
+function executePostCreateProcessing(input: IEntityCreator): void {
+    if (input._postCreateProcessing) {
+        input._postCreateProcessing();
+    }
+}
+
 
 /**
  * Create and validate 
@@ -176,11 +198,12 @@ export function validateModel(
  * @param options 
  * @returns 
  */
-export function createEntityAndValidate<T extends object>(type: { new(): T; }, data: unknown, options?: ValidateModelOptions): T {
+export function createEntityAndValidate<T extends object | IEntityCreator>(type: { new(): T; }, data: unknown, options?: ValidateModelOptions): T {
     const typeName = type.name;
     let result: T;
     try {
         result = plainToClass(type, data);
+        executePostCreateProcessing(result as IEntityCreator);
     } catch (e) {
         localDebug(() => `createAndValidate create failed with data: ${data}`);
         if (e instanceof EntityCreationError) {

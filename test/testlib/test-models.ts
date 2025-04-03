@@ -7,6 +7,9 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 
+import { IEntityCreator } from '@fp8proj';
+
+
 export class DatabaseConfig {
     @IsString()
     username!: string;
@@ -106,4 +109,20 @@ export class BadConfigData {
 
     @IsString()
     city!: string;
+}
+
+export class ConfigDataWithPost implements IEntityCreator {
+    #id: string | undefined;
+
+    @IsString()
+    name!: string;
+    
+    get id(): string {
+        if (this.#id === undefined) throw new Error('id not set');
+        return this.#id;
+    }
+
+    _postCreateProcessing(): void {
+        this.#id = `id.${this.name}`
+    }
 }

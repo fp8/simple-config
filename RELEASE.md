@@ -1,5 +1,9 @@
 # @fp8/simple-config
 
+## 0.7.0 [2025-04-03]
+
+* Added `IEntityCreator` with `_postCreateProcessing` allowing for post entity creation processing
+
 ## 0.6.2 [2025-04-02]
 
 * Allowed manual creation of `EntityCreationError`
