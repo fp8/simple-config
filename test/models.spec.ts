@@ -1,4 +1,4 @@
-import {expect, DatabaseConfig} from './testlib';
+import {expect, DatabaseConfig, ConfigDataWithPost} from './testlib';
 import {
     MinLength,
     IsAlpha,
@@ -167,5 +167,15 @@ describe('models.createAndValidate', () => {
         }
 
         expect(errorRaised).to.be.true;
+    });
+
+    it('ConfigDataWithPost - postCreateProcessing', () => {
+        const data = {
+            name: 'XltzR1P1T4'
+        };
+
+        const result = createEntityAndValidate(ConfigDataWithPost, data);
+        expect(result.name).to.eql('XltzR1P1T4');
+        expect(result.id).to.eql('id.XltzR1P1T4');
     });
 });

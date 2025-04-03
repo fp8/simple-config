@@ -11,7 +11,7 @@ function readExpectedIFieldValidationErrorFile(name: string): IFieldValidationEr
     // Need to ensure .value alway exists
     for (const key of Object.keys(expected)) {
         if (!('value' in expected[key])) {
-            expected[key].value = undefined;
+            (expected[key] as unknown as any).value = undefined;
         }
     }
 
