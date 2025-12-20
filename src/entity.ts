@@ -1,6 +1,6 @@
 
 import { validateSync, ValidatorOptions, ValidationError } from 'class-validator';
-import { plainToClass } from 'class-transformer';
+import { plainToClass, ClassTransformOptions } from 'class-transformer';
 import { IJson, localDebug, isEmpty, TJsonValue, Loggable } from 'jlog-facade';
 
 import { logger } from './core';
@@ -71,7 +71,7 @@ export function* generateIFieldValidationDetail(errors: ValidationError[], paren
         If address.city has an error, we just want to report error for address.city and not address.
         */
         if (error.children === undefined || isEmpty(error.children)) {
-            const details =  {
+            const details = {
                 value: error.value,
                 constraints: error.constraints
             }
@@ -173,7 +173,7 @@ export function validateModel(
 export interface IEntityCreator {
     /**
      * A private method that is ran after entity creation.  If need to raise
-     * error, raise and EntityCreationError
+     * error, raise an EntityCreationError
      * @returns 
      */
     _postCreateProcessing(): void
@@ -189,8 +189,52 @@ function executePostCreateProcessing(input: IEntityCreator): void {
     }
 }
 
+export interface EntityCreatorOptions {
+    /**
+     * Optional class-transformer options
+     */
+    createOptions?: ClassTransformOptions;
+    /**
+ * Optional class-validator options
+ */
+    validateModelOptions?: ValidateModelOptions;
+}
 
 /**
+ * 
+ * @param type 
+ * @param data 
+ * @param options 
+ */
+export function createAndValidate<T extends object | IEntityCreator>(type: { new(): T; }, data: unknown, options?: EntityCreatorOptions): T {
+    const typeName = type.name;
+    let result: T;
+    try {
+        result = plainToClass(type, data, options?.createOptions);
+        executePostCreateProcessing(result as IEntityCreator);
+    } catch (e) {
+        localDebug(() => `createAndValidate create failed with data: ${data}`);
+        if (e instanceof EntityCreationError) {
+            throw e;
+        } else if (e instanceof ValidationError) {
+            throw EntityCreationError.fromValidationError(`ValidationError when creating an instance of ${typeName}`, e);
+        } else if (e instanceof Error) {
+            throw new EntityCreationError(`Failed to create instance of ${typeName}: ${e.message}`, []);
+        } else {
+            // If not error, not sure what this is.
+            throw e;
+        }
+    }
+
+    // Validate ConfigData
+    validateModel(result, options?.validateModelOptions ?? DEFAULT_VALIDATION_OPTIONS);
+
+    return result;
+}
+
+/**
+ * @deprecated use createAndValidate
+ * 
  * Create and validate 
  * 
  * @param type 
@@ -223,3 +267,6 @@ export function createEntityAndValidate<T extends object | IEntityCreator>(type:
 
     return result;
 }
+
+
+

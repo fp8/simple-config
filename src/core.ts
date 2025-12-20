@@ -115,7 +115,9 @@ function checkIfTemplateTagsExists(template: string, templateTags?: [string, str
  * @param filepath 
  * @returns 
  */
-export function loadConfigFile(filepath: string, templateTags?: [string, string]): ILoadConfigFileResult | undefined {
+export function 
+
+loadConfigFile(filepath: string, templateTags?: [string, string]): ILoadConfigFileResult | undefined {
     // Make sure that config file to be loaded ends with the expected extension
     if (!checkConfigFileExtension(filepath)) {
         return undefined;

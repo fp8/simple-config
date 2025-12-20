@@ -1,5 +1,12 @@
 # @fp8/simple-config
 
+## 0.7.1 [2025-12-21]
+
+* Added `createAndValidate` method replacing `createEntityAndValidate` supporting `EntityCreatorOptions`
+* `EntityCreatorOptions` allows passing of both creation and validation options
+* `createEntityAndValidate` is now depricated
+
+
 ## 0.7.0 [2025-04-03]
 
 * Added `IEntityCreator` with `_postCreateProcessing` allowing for post entity creation processing
