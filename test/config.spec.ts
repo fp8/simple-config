@@ -118,4 +118,77 @@ describe('config', () => {
       }).to.throw(EntityCreationError);
     });
   });
+
+  // Primary tests for disabling validation via ConfigStore using disableValidation
+  describe('ConfigStore with disableValidation', () => {
+    it('skips validation when disableValidation is true', () => {
+      // Create a ConfigStore with invalid data that would normally fail validation
+      const store = new ConfigStore(ConfigData, {
+        env: 'nonexistent-test-env-validation',
+        entries: {
+          name: 'ab', // too short, violates MinLength(5)
+          db: { username: 'user', password: 'pass' }
+        },
+        disableValidation: true
+      });
+
+      expect(store.data).to.be.instanceOf(ConfigData);
+      expect(store.data.name).to.eql('ab');
+    });
+
+    it('still validates when disableValidation is false', () => {
+      expect(() => {
+        new ConfigStore(ConfigData, {
+          env: 'nonexistent-test-env-validation-2',
+          entries: {
+            name: 'ab', // too short
+            db: { username: 'user', password: 'pass' }
+          },
+          disableValidation: false
+        });
+      }).to.throw(EntityCreationError);
+    });
+
+    it('validates by default when disableValidation is not specified', () => {
+      expect(() => {
+        new ConfigStore(ConfigData, {
+          env: 'nonexistent-test-env-validation-3',
+          entries: {
+            name: 'ab', // too short
+            db: { username: 'user', password: 'pass' }
+          }
+        });
+      }).to.throw(EntityCreationError);
+    });
+  });
+
+  // Tests for deprecated ValidateModelOptions.disable via ConfigStore
+  describe('ConfigStore with deprecated validateModelOptions.disable', () => {
+    it('skips validation when validateModelOptions.disable is true', () => {
+      const store = new ConfigStore(ConfigData, {
+        env: 'nonexistent-test-env-validation-4',
+        entries: {
+          name: 'ab', // too short
+          db: { username: 'user', password: 'pass' }
+        },
+        validateModelOptions: { disable: true }
+      });
+
+      expect(store.data).to.be.instanceOf(ConfigData);
+      expect(store.data.name).to.eql('ab');
+    });
+
+    it('validates when deprecated disable is false', () => {
+      expect(() => {
+        new ConfigStore(ConfigData, {
+          env: 'nonexistent-test-env-validation-5',
+          entries: {
+            name: 'ab', // too short
+            db: { username: 'user', password: 'pass' }
+          },
+          validateModelOptions: { disable: false }
+        });
+      }).to.throw(EntityCreationError);
+    });
+  });
 });

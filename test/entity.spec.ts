@@ -149,4 +149,41 @@ describe('models.createAndValidate', () => {
             expect((result as any).extraUnknownField).to.be.undefined;
         });
     });
+
+        // Primary tests for disabling validation using EntityCreatorOptions.disableValidation
+        describe('createAndValidate disableValidation', () => {
+            it('skips validation when disableValidation is true', () => {
+                const badData = { name: 'ab' }; // too short (<3)
+
+                // Without disabling validation, should throw
+                expect(() => createAndValidate(SimpleTestModel, badData)).to.throw(EntityCreationError);
+
+                // With disableValidation, should NOT throw and should return instance
+                const result = createAndValidate(SimpleTestModel, badData, { disableValidation: true });
+                expect(result).to.be.instanceOf(SimpleTestModel);
+                expect(result.name).to.eql('ab');
+            });
+
+            it('still validates when disableValidation is false', () => {
+                const badData = { name: 'ab' };
+                expect(() => createAndValidate(SimpleTestModel, badData, { disableValidation: false })).to.throw(EntityCreationError);
+            });
+        });
+
+        // Dedicated tests for deprecated ValidateModelOptions.disable
+        describe('createAndValidate deprecated ValidateModelOptions.disable', () => {
+            it('skips validation when validateModelOptions.disable is true', () => {
+                const badData = { name: 'ab' };
+
+                // Should NOT throw when deprecated disable flag is used
+                const result = createAndValidate(SimpleTestModel, badData, { validateModelOptions: { disable: true } });
+                expect(result).to.be.instanceOf(SimpleTestModel);
+                expect(result.name).to.eql('ab');
+            });
+
+            it('validates when deprecated disable is false', () => {
+                const badData = { name: 'ab' };
+                expect(() => createAndValidate(SimpleTestModel, badData, { validateModelOptions: { disable: false } })).to.throw(EntityCreationError);
+            });
+        });
 });

@@ -3,9 +3,9 @@
 ## 0.7.1 [2025-12-21]
 
 * Added `createAndValidate` method replacing `createEntityAndValidate` supporting `EntityCreatorOptions`
-* `EntityCreatorOptions` allows passing of both creation and validation options
-* `createEntityAndValidate` is now depricated
-
+* `ConfigData` constructor now accept `EntityCreatorOptions` allows passing of both creation and validation options
+* DEPRICATED: `createEntityAndValidate` in favor of `createAndValidate`
+* DEPRICATED: `validateModelOptions.disable` in favor of `EntityCreatorOptions.disableValidation`
 
 ## 0.7.0 [2025-04-03]
 

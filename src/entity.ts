@@ -10,7 +10,9 @@ import { logger } from './core';
  * with additional `disable` option to skip validation.
  */
 export interface ValidateModelOptions extends ValidatorOptions {
-    // Disable validation
+    /**
+     * Depricated.  Use `disableValidation` in EntityCreatorOptions instead.
+     */
     disable?: boolean;
 }
 
@@ -153,6 +155,7 @@ export function validateModel(
     options: ValidateModelOptions = DEFAULT_VALIDATION_OPTIONS,
 ): void {
     // Skip validation if disabled
+    // ToDo: remove depricated disable option in future
     if (options.disable) {
         return;
     }
@@ -195,10 +198,23 @@ export interface EntityCreatorOptions {
      */
     createOptions?: ClassTransformOptions;
     /**
+     * Disable Validation
+     */
+    disableValidation?: boolean;
+    /**
      * Optional class-validator options
      */
     validateModelOptions?: ValidateModelOptions;
+    /**
+     * Custom createAndValidate function
+     */
+    createAndValidateFunction?: TCreatedAndValidated<object | IEntityCreator>;
 }
+
+/**
+ * Type definition for createAndValidate function
+ */
+export type TCreatedAndValidated<T extends object | IEntityCreator> = (type: { new(): T; }, data: unknown, options?: EntityCreatorOptions) => T;
 
 /**
  * 
@@ -227,7 +243,9 @@ export function createAndValidate<T extends object | IEntityCreator>(type: { new
     }
 
     // Validate ConfigData
-    validateModel(result, options?.validateModelOptions ?? DEFAULT_VALIDATION_OPTIONS);
+    if (!options?.disableValidation) {
+        validateModel(result, options?.validateModelOptions ?? DEFAULT_VALIDATION_OPTIONS);
+    }
 
     return result;
 }
