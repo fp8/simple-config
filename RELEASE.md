@@ -7,6 +7,7 @@
 * Added `EntityCreatorOptions.createAndValidateFunction` allowing custom `createAndValidate` function
 * Upgraded typescript to `~5.9.2` from `~5.7.3`
 * Converted test from `chai` to `jest`
+* BUG: If a config file is not found, throw `should throw error if no config found` Error [#16]
 * DEPRICATED: `createEntityAndValidate` in favor of `createAndValidate`
 * DEPRICATED: `validateModelOptions.disable` in favor of `EntityCreatorOptions.disableValidation`
 
