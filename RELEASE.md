@@ -1,5 +1,16 @@
 # @fp8/simple-config
 
+## 0.7.1 [2025-12-21]
+
+* Added `createAndValidate` method replacing `createEntityAndValidate` supporting `EntityCreatorOptions` [#18]
+* `ConfigData` constructor now accept `EntityCreatorOptions` allows passing of both creation and validation options
+* Added `EntityCreatorOptions.createAndValidateFunction` allowing custom `createAndValidate` function
+* Upgraded typescript to `~5.9.2` from `~5.7.3`
+* Converted test from `chai` to `jest`
+* BUG: If a config file is not found, throw `should throw error if no config found` Error [#16]
+* DEPRICATED: `createEntityAndValidate` in favor of `createAndValidate`
+* DEPRICATED: `validateModelOptions.disable` in favor of `EntityCreatorOptions.disableValidation`
+
 ## 0.7.0 [2025-04-03]
 
 * Added `IEntityCreator` with `_postCreateProcessing` allowing for post entity creation processing
