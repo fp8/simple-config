@@ -59,7 +59,9 @@ export class ConfigStore<T extends object> {
     } else {
       // Validate the internal data if type passed
       try {
-        data = createAndValidate(type, configDataToUse, options);
+        // Use custom createAndValidate function if provided, otherwise use default
+        const createAndValidateFn = options?.createAndValidateFunction ?? createAndValidate;
+        data = createAndValidateFn(type, configDataToUse, options);
       } catch (err) {
         if (err instanceof EntityCreationError) {
           logger.warn('Validation failed for fields:', Loggable.of('fileds', err.fields));

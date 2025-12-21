@@ -191,4 +191,119 @@ describe('config', () => {
       }).to.throw(EntityCreationError);
     });
   });
+
+  // Tests for custom createAndValidateFunction
+  describe('ConfigStore with custom createAndValidateFunction', () => {
+    it('uses custom createAndValidate function when provided', () => {
+      let customFunctionCalled = false;
+      let receivedType: any;
+      let receivedData: any;
+      let receivedOptions: any;
+
+      const customCreateAndValidate = (type: any, data: any, options: any) => {
+        customFunctionCalled = true;
+        receivedType = type;
+        receivedData = data;
+        receivedOptions = options;
+        
+        // Return a custom instance with marker
+        const instance = new type();
+        Object.assign(instance, data);
+        (instance as any).__customCreated = true;
+        return instance;
+      };
+
+      const store = new ConfigStore(ConfigData, {
+        env: 'nonexistent-custom-fn-test',
+        entries: {
+          name: 'CustomFunctionTest',
+          db: { username: 'user123', password: 'pass123' }
+        },
+        createAndValidateFunction: customCreateAndValidate
+      });
+
+      // Verify custom function was called
+      expect(customFunctionCalled).to.be.true;
+      expect(receivedType).to.equal(ConfigData);
+      expect(receivedData).to.have.property('name', 'CustomFunctionTest');
+      expect(receivedOptions).to.have.property('createAndValidateFunction');
+      
+      // Verify the custom marker exists
+      expect((store.data as any).__customCreated).to.be.true;
+      expect(store.data.name).to.eql('CustomFunctionTest');
+    });
+
+    it('allows custom function to skip validation for invalid data', () => {
+      const customCreateAndValidate = (type: any, data: any) => {
+        // Custom function that doesn't validate - just creates instance
+        const instance = new type();
+        Object.assign(instance, data);
+        return instance;
+      };
+
+      // This would normally fail validation (name too short)
+      const store = new ConfigStore(ConfigData, {
+        env: 'nonexistent-custom-fn-test-2',
+        entries: {
+          name: 'ab', // too short
+          db: { username: 'user', password: 'pass' }
+        },
+        createAndValidateFunction: customCreateAndValidate
+      });
+
+      expect(store.data).to.be.instanceOf(ConfigData);
+      expect(store.data.name).to.eql('ab');
+    });
+
+    it('allows custom function to apply custom validation logic', () => {
+      const customCreateAndValidate = (type: any, data: any, options: any) => {
+        const instance = new type();
+        Object.assign(instance, data);
+        
+        // Custom validation: name must start with "CUSTOM-"
+        if (!(instance as any).name?.startsWith('CUSTOM-')) {
+          throw new EntityCreationError('Name must start with CUSTOM-', []);
+        }
+        
+        return instance;
+      };
+
+      // Should succeed with correct prefix
+      const store1 = new ConfigStore(ConfigData, {
+        env: 'nonexistent-custom-fn-test-3',
+        entries: {
+          name: 'CUSTOM-ValidName',
+          db: { username: 'user', password: 'pass' }
+        },
+        createAndValidateFunction: customCreateAndValidate
+      });
+      expect(store1.data.name).to.eql('CUSTOM-ValidName');
+
+      // Should fail without correct prefix
+      expect(() => {
+        new ConfigStore(ConfigData, {
+          env: 'nonexistent-custom-fn-test-4',
+          entries: {
+            name: 'InvalidName',
+            db: { username: 'user', password: 'pass' }
+          },
+          createAndValidateFunction: customCreateAndValidate
+        });
+      }).to.throw(EntityCreationError, 'Name must start with CUSTOM-');
+    });
+
+    it('falls back to default createAndValidate when custom function not provided', () => {
+      // This should use default validation and fail
+      expect(() => {
+        new ConfigStore(ConfigData, {
+          env: 'nonexistent-custom-fn-test-5',
+          entries: {
+            name: 'ab', // too short
+            db: { username: 'user', password: 'pass' }
+          }
+          // No createAndValidateFunction provided
+        });
+      }).to.throw(EntityCreationError);
+    });
+  });
 });
