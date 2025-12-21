@@ -6,6 +6,16 @@ import { ConfigStore, EntityCreationError } from '@proj';
  * Test the config loaded from ./etc/local
  */
 describe('config', () => {
+  describe('no config found', () => {
+    it('should throw error if no config found', () => {
+      expect(() => {
+        new ConfigStore<ConfigData>(undefined, {
+          env: 'nonexistent-env',
+        });
+      }).toThrow('No configuration data loaded from any source');
+    });
+  });
+
   describe('no validation', () => {
     const store = new ConfigStore<ConfigData>(undefined, {
       entries: { city: 'Rome-QjickF4JAF' },
@@ -126,7 +136,7 @@ describe('config', () => {
     it('skips validation when disableValidation is true', () => {
       // Create a ConfigStore with invalid data that would normally fail validation
       const store = new ConfigStore(ConfigData, {
-        env: 'nonexistent-test-env-validation',
+        env: 'empty',
         entries: {
           name: 'ab', // too short, violates MinLength(5)
           db: { username: 'user', password: 'pass' },
@@ -141,7 +151,7 @@ describe('config', () => {
     it('still validates when disableValidation is false', () => {
       expect(() => {
         new ConfigStore(ConfigData, {
-          env: 'nonexistent-test-env-validation-2',
+          env: 'empty',
           entries: {
             name: 'ab', // too short
             db: { username: 'user', password: 'pass' },
@@ -154,7 +164,7 @@ describe('config', () => {
     it('validates by default when disableValidation is not specified', () => {
       expect(() => {
         new ConfigStore(ConfigData, {
-          env: 'nonexistent-test-env-validation-3',
+          env: 'empty',
           entries: {
             name: 'ab', // too short
             db: { username: 'user', password: 'pass' },
@@ -168,7 +178,7 @@ describe('config', () => {
   describe('ConfigStore with deprecated validateModelOptions.disable', () => {
     it('skips validation when validateModelOptions.disable is true', () => {
       const store = new ConfigStore(ConfigData, {
-        env: 'nonexistent-test-env-validation-4',
+        env: 'empty',
         entries: {
           name: 'ab', // too short
           db: { username: 'user', password: 'pass' },
@@ -183,7 +193,7 @@ describe('config', () => {
     it('validates when deprecated disable is false', () => {
       expect(() => {
         new ConfigStore(ConfigData, {
-          env: 'nonexistent-test-env-validation-5',
+          env: 'empty',
           entries: {
             name: 'ab', // too short
             db: { username: 'user', password: 'pass' },
@@ -216,7 +226,7 @@ describe('config', () => {
       };
 
       const store = new ConfigStore(ConfigData, {
-        env: 'nonexistent-custom-fn-test',
+        env: 'empty',
         entries: {
           name: 'CustomFunctionTest',
           db: { username: 'user123', password: 'pass123' },
@@ -245,7 +255,7 @@ describe('config', () => {
 
       // This would normally fail validation (name too short)
       const store = new ConfigStore(ConfigData, {
-        env: 'nonexistent-custom-fn-test-2',
+        env: 'empty',
         entries: {
           name: 'ab', // too short
           db: { username: 'user', password: 'pass' },
@@ -272,7 +282,7 @@ describe('config', () => {
 
       // Should succeed with correct prefix
       const store1 = new ConfigStore(ConfigData, {
-        env: 'nonexistent-custom-fn-test-3',
+        env: 'empty',
         entries: {
           name: 'CUSTOM-ValidName',
           db: { username: 'user', password: 'pass' },
@@ -284,7 +294,7 @@ describe('config', () => {
       // Should fail without correct prefix
       expect(() => {
         new ConfigStore(ConfigData, {
-          env: 'nonexistent-custom-fn-test-4',
+          env: 'empty',
           entries: {
             name: 'InvalidName',
             db: { username: 'user', password: 'pass' },
@@ -298,7 +308,7 @@ describe('config', () => {
       // This should use default validation and fail
       expect(() => {
         new ConfigStore(ConfigData, {
-          env: 'nonexistent-custom-fn-test-5',
+          env: 'empty',
           entries: {
             name: 'ab', // too short
             db: { username: 'user', password: 'pass' },

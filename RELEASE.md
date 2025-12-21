@@ -2,7 +2,7 @@
 
 ## 0.7.1 [2025-12-21]
 
-* Added `createAndValidate` method replacing `createEntityAndValidate` supporting `EntityCreatorOptions`
+* Added `createAndValidate` method replacing `createEntityAndValidate` supporting `EntityCreatorOptions` [#18]
 * `ConfigData` constructor now accept `EntityCreatorOptions` allows passing of both creation and validation options
 * Added `EntityCreatorOptions.createAndValidateFunction` allowing custom `createAndValidate` function
 * Upgraded typescript to `~5.9.2` from `~5.7.3`

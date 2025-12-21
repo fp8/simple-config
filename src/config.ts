@@ -46,6 +46,12 @@ export class ConfigStore<T extends object> {
     // Load data from config file, expect configJson to be at least {}
     const { configJson, source, configDir } = readConfig(options ?? {});
 
+    // If no data loaded, throw error
+    if (source === undefined) {
+      logger.warn('No configuration data loaded from any source', Loggable.of('options', options));
+      throw new Error('No configuration data loaded from any source');
+    }
+
     // Append to loaded data if necesary
     let configDataToUse: object;
     if (options?.entries) {
