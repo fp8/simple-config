@@ -5,8 +5,8 @@ const config: Config = {
   coverageDirectory: "./coverage",
   moduleFileExtensions: ["ts", "js"],
   moduleNameMapper: {
-    "^@fp8proj$": "<rootDir>/src/index",
-    "^@fp8proj/(.*)$": "<rootDir>/src/$1",
+    "^@proj$": "<rootDir>/src/index",
+    "^@proj/(.*)$": "<rootDir>/src/$1",
   },
   rootDir: ".",
   testEnvironment: "node",

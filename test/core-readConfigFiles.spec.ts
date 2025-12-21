@@ -1,4 +1,4 @@
-import { readConfigFiles } from '@fp8proj/core';
+import { readConfigFiles } from '@proj/core';
 
 describe('core-readConfigFiles', () => {
   it('test env', () => {

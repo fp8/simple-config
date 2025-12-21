@@ -1,6 +1,6 @@
 import { IJson } from 'jlog-facade';
 
-import { processMustache, IReadConfigOptions } from '@fp8proj/core';
+import { processMustache, IReadConfigOptions } from '@proj/core';
 
 const data: IJson = {
   data: {

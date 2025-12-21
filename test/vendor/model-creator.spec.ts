@@ -4,7 +4,7 @@ import {
   createEntityAndValidate,
   validateModel,
   ValidateModelOptions,
-} from '@fp8proj';
+} from '@proj';
 import * as crypto from 'node:crypto';
 
 import { IsBase64, IsInt, IsNumber, IsString } from 'class-validator';

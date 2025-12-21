@@ -9,7 +9,7 @@ import {
 } from 'class-validator';
 import { Expose, Type } from 'class-transformer';
 
-import { IEntityCreator } from '@fp8proj';
+import { IEntityCreator } from '@proj';
 
 export class DatabaseConfig {
   @IsString()

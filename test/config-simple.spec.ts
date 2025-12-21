@@ -1,5 +1,5 @@
 import { IsNumber } from 'class-validator';
-import { ConfigStore } from '@fp8proj';
+import { ConfigStore } from '@proj';
 
 class ConfigData {
   @IsNumber()

@@ -1,4 +1,4 @@
-import { readConfig } from '@fp8proj/core';
+import { readConfig } from '@proj/core';
 
 describe('core-readConfig', () => {
   // app.json takes priority over config.json

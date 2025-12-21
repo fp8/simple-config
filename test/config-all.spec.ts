@@ -1,4 +1,4 @@
-import { ConfigStore, IConfigStoreOptions } from '@fp8proj';
+import { ConfigStore, IConfigStoreOptions } from '@proj';
 
 import {
   ConfigDataAll,

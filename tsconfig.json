@@ -14,8 +14,8 @@
     "noImplicitThis": true,
     "outDir": "./lib",
     "paths": {
-      "@fp8proj": ["src"],
-      "@fp8proj/*": ["src/*"]
+      "@proj": ["src"],
+      "@proj/*": ["src/*"]
     },
     "removeComments": true,
     "resolveJsonModule": true,

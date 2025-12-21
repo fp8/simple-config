@@ -2,7 +2,7 @@ import { DatabaseConfig, ConfigDataWithPost } from './testlib';
 import { MinLength, IsAlpha, IsDate, ValidationError } from 'class-validator';
 import { Transform } from 'class-transformer';
 
-import { createEntityAndValidate, EntityCreationError } from '@fp8proj';
+import { createEntityAndValidate, EntityCreationError } from '@proj';
 
 /**
  * Function that raises EntityCreationError when date passed is not valid

@@ -6,7 +6,7 @@ import {
   EntityCreationError,
   createAndValidate,
   validateModel,
-} from '@fp8proj/entity';
+} from '@proj/entity';
 
 describe('models.createAndValidate', () => {
   describe('generateIFieldValidationDetail', () => {

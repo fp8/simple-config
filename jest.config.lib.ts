@@ -1,8 +1,8 @@
 import config from './jest.config';
 
 config.moduleNameMapper = {
-  '^@fp8proj$': '<rootDir>/lib',
-  '^@fp8proj/(.*)$': '<rootDir>/lib/$1',
+  '^@proj$': '<rootDir>/lib',
+  '^@proj/(.*)$': '<rootDir>/lib/$1',
 };
 
 config.transform = {
@@ -10,7 +10,7 @@ config.transform = {
     "ts-jest",
     {
       "ts-jest": {
-        tsconfig: "./tsconfig.testlib.json",
+        tsconfig: "./tsconfig.test.json",
       },
     },
   ],

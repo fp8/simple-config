@@ -1,7 +1,7 @@
 import { readJsonFile, ConfigData, BadConfigData } from './testlib';
 
-import { ConfigStore, EntityCreationError } from '@fp8proj';
-import { IFieldValidationError } from '@fp8proj/entity';
+import { ConfigStore, EntityCreationError } from '@proj';
+import { IFieldValidationError } from '@proj/entity';
 
 function readExpectedIFieldValidationErrorFile(
   name: string,

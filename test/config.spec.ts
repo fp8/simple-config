@@ -1,6 +1,6 @@
 import { ConfigData, DatabaseConfig } from './testlib';
 
-import { ConfigStore, EntityCreationError } from '@fp8proj';
+import { ConfigStore, EntityCreationError } from '@proj';
 
 /**
  * Test the config loaded from ./etc/local
