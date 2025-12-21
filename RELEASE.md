@@ -5,6 +5,8 @@
 * Added `createAndValidate` method replacing `createEntityAndValidate` supporting `EntityCreatorOptions`
 * `ConfigData` constructor now accept `EntityCreatorOptions` allows passing of both creation and validation options
 * Added `EntityCreatorOptions.createAndValidateFunction` allowing custom `createAndValidate` function
+* Upgraded typescript to `~5.9.2` from `~5.7.3`
+* Converted test from `chai` to `jest`
 * DEPRICATED: `createEntityAndValidate` in favor of `createAndValidate`
 * DEPRICATED: `validateModelOptions.disable` in favor of `EntityCreatorOptions.disableValidation`
 
