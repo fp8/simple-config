@@ -192,30 +192,6 @@ function executePostCreateProcessing(input: IEntityCreator): void {
     }
 }
 
-export interface EntityCreatorOptions {
-    /**
-     * Optional class-transformer options
-     */
-    createOptions?: ClassTransformOptions;
-    /**
-     * Disable Validation
-     */
-    disableValidation?: boolean;
-    /**
-     * Optional class-validator options
-     */
-    validateModelOptions?: ValidateModelOptions;
-    /**
-     * Custom createAndValidate function
-     */
-    createAndValidateFunction?: TCreatedAndValidated<object | IEntityCreator>;
-}
-
-/**
- * Type definition for createAndValidate function
- */
-export type TCreatedAndValidated<T extends object | IEntityCreator> = (type: { new(): T; }, data: unknown, options?: EntityCreatorOptions) => T;
-
 /**
  * 
  * @param type 
@@ -248,6 +224,31 @@ export function createAndValidate<T extends object | IEntityCreator>(type: { new
     }
 
     return result;
+}
+
+/**
+ * Type definition for createAndValidate function
+ */
+export type TCreatedAndValidated = typeof createAndValidate;
+
+
+export interface EntityCreatorOptions {
+    /**
+     * Optional class-transformer options
+     */
+    createOptions?: ClassTransformOptions;
+    /**
+     * Disable Validation
+     */
+    disableValidation?: boolean;
+    /**
+     * Optional class-validator options
+     */
+    validateModelOptions?: ValidateModelOptions;
+    /**
+     * Custom createAndValidate function
+     */
+    createAndValidateFunction?: TCreatedAndValidated;
 }
 
 /**
