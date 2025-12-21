@@ -1,7 +1,7 @@
-import {expect} from './testlib';
+import {expect, ConfigData, SimpleTestModel} from './testlib';
 
 import { ValidationError } from 'class-validator';
-import { generateIFieldValidationDetail, EntityCreationError } from '@fp8proj/entity';
+import { generateIFieldValidationDetail, EntityCreationError, createAndValidate, validateModel } from '@fp8proj/entity';
 
 
 describe('models.createAndValidate', () => {
@@ -99,6 +99,54 @@ describe('models.createAndValidate', () => {
                     }
                 }
             });
+        });
+    });
+
+    describe('createAndValidate with createOptions', () => {
+        it('createAndValidate should succeed add extraUnknownField to ConfigData instance by default', () => {
+            const data = {
+                name: 'Test Config Name 1bYQiazARy',
+                db: {
+                    username: 'user123',
+                    password: 'pass123'
+                },
+                extraUnknownField: 'extra-1bYQiazARy'
+            };
+
+            const result = createAndValidate(ConfigData, data);
+
+            expect(result).to.be.instanceOf(ConfigData);
+            expect(result.name).to.eql('Test Config Name 1bYQiazARy');
+            expect((result as any).extraUnknownField).to.eql('extra-1bYQiazARy');
+        });
+        it('createAndValidate should not set excludeExtraneousValues flag if excludeExtraneousValues is true', () => {
+            const data = {
+                name: 'Test Config Name sTYLBxW2hK',
+                db: {
+                    username: 'user123',
+                    password: 'pass123'
+                },
+                extraUnknownField: 'extra-sTYLBxW2hK'
+            };
+            const options = {
+                createOptions: {
+                    excludeExtraneousValues: true
+                },
+                validateModelOptions: { 
+                    disable: true
+                }
+            };
+
+            /**
+             * Import to note that, in order for excludeExtraneousValues to work,
+             * the class properties must be decorated with @Expose from class-transformer.
+             * This is already done in ConfigData model used in this test.
+             */
+            const result = createAndValidate(ConfigData, data, options);
+
+            expect(result).to.be.instanceOf(ConfigData);
+            expect(result.name).to.eql('Test Config Name sTYLBxW2hK');
+            expect((result as any).extraUnknownField).to.be.undefined;
         });
     });
 });

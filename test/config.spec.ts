@@ -1,6 +1,6 @@
 import {expect, ConfigData, DatabaseConfig} from './testlib';
 
-import { ConfigStore } from '@fp8proj';
+import { ConfigStore, EntityCreationError } from '@fp8proj';
 
 /**
  * Test the config loaded from ./etc/local
@@ -88,6 +88,34 @@ describe('config', () => {
   
     it('configStore.configDir', () => {
       expect(store.configDir?.endsWith('/etc/local')).to.be.true;
+    });
+  });
+
+  describe('with createOptions', () => {
+    it('create should succeed if excludeExtraneousValues flag is not set', () => {
+      const store = new ConfigStore(ConfigData, {
+        entries: { 
+          customField: 'custom-abdo1j6QDq',
+        }
+      });
+
+      expect(store.data).to.be.instanceOf(ConfigData);
+      expect((store.data as any).customField).to.equal('custom-abdo1j6QDq');
+    });
+
+    it('create should fail if excludeExtraneousValues flag is set', () => {
+      // Test that ConfigStore constructor properly accepts createOptions
+      // in the IConfigStoreOptions parameter
+      expect(() => {
+        const store = new ConfigStore(ConfigData, {
+          entries: {
+            customField: 'custom-abdo1j6QDq',
+          },
+          createOptions: {
+            excludeExtraneousValues: true,
+          }
+        });
+      }).to.throw(EntityCreationError);
     });
   });
 });

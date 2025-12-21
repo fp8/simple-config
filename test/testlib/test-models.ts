@@ -5,7 +5,7 @@ import {
     IsBase64,
     IsNotEmpty,
 } from 'class-validator';
-import { Type } from 'class-transformer';
+import { Expose, Type } from 'class-transformer';
 
 import { IEntityCreator } from '@fp8proj';
 
@@ -18,13 +18,16 @@ export class DatabaseConfig {
 }
 
 export class ConfigData {
+    @Expose()
     @MinLength(5)
     name!: string;
 
+    @Expose()
     @Type(() => DatabaseConfig)
     @ValidateNested()
     db!: DatabaseConfig;
 
+    @Expose()
     city?: string;
 }
 
@@ -125,4 +128,9 @@ export class ConfigDataWithPost implements IEntityCreator {
     _postCreateProcessing(): void {
         this.#id = `id.${this.name}`
     }
+}
+export class SimpleTestModel {
+    @IsString()
+    @MinLength(3)
+    name!: string;
 }

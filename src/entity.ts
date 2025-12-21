@@ -195,8 +195,8 @@ export interface EntityCreatorOptions {
      */
     createOptions?: ClassTransformOptions;
     /**
- * Optional class-validator options
- */
+     * Optional class-validator options
+     */
     validateModelOptions?: ValidateModelOptions;
 }
 
