@@ -1,12 +1,61 @@
 import { ConfigData, SimpleTestModel } from './testlib';
 
 import { ValidationError } from 'class-validator';
+import { IsString } from 'class-validator';
 import {
   generateIFieldValidationDetail,
   EntityCreationError,
   createAndValidate,
   validateModel,
+  IEntityCreator,
 } from '@proj/entity';
+
+// Test models for error handling scenarios
+class ModelThrowingEntityCreationError implements IEntityCreator {
+  @IsString()
+  name!: string;
+
+  _postCreateProcessing(): void {
+    throw EntityCreationError.from(
+      'Custom EntityCreationError from _postCreateProcessing',
+      'CustomConstraint',
+      'name',
+      this.name,
+    );
+  }
+}
+
+class ModelThrowingValidationError implements IEntityCreator {
+  @IsString()
+  name!: string;
+
+  _postCreateProcessing(): void {
+    const validationError = new ValidationError();
+    validationError.property = 'name';
+    validationError.value = this.name;
+    validationError.constraints = { customError: 'ValidationError thrown' };
+    throw validationError;
+  }
+}
+
+class ModelThrowingGenericError implements IEntityCreator {
+  @IsString()
+  name!: string;
+
+  _postCreateProcessing(): void {
+    throw new Error('Generic error from _postCreateProcessing');
+  }
+}
+
+class ModelThrowingNonError implements IEntityCreator {
+  @IsString()
+  name!: string;
+
+  _postCreateProcessing(): void {
+    // eslint-disable-next-line @typescript-eslint/no-throw-literal
+    throw 'String error thrown';
+  }
+}
 
 describe('models.createAndValidate', () => {
   describe('generateIFieldValidationDetail', () => {
@@ -244,6 +293,227 @@ describe('models.createAndValidate', () => {
           validateModelOptions: { disable: false },
         }),
       ).toThrow(EntityCreationError);
+    });
+  });
+
+  describe('createAndValidate externalValidationFunction', () => {
+    it('calls externalValidationFunction when provided', () => {
+      const goodData = { name: 'ValidName' };
+      const mockValidationFn = jest.fn();
+
+      const result = createAndValidate(SimpleTestModel, goodData, {
+        externalValidationFunction: mockValidationFn,
+      });
+
+      expect(result).toBeInstanceOf(SimpleTestModel);
+      expect(result.name).toEqual('ValidName');
+      expect(mockValidationFn).toHaveBeenCalledTimes(1);
+      expect(mockValidationFn).toHaveBeenCalledWith(result);
+    });
+
+    it('externalValidationFunction can throw errors', () => {
+      const goodData = { name: 'ValidName' };
+      const mockValidationFn = jest.fn(() => {
+        throw new Error('Custom validation error');
+      });
+
+      expect(() =>
+        createAndValidate(SimpleTestModel, goodData, {
+          externalValidationFunction: mockValidationFn,
+        }),
+      ).toThrow('Custom validation error');
+      expect(mockValidationFn).toHaveBeenCalledTimes(1);
+    });
+
+    it('externalValidationFunction ignores validateModelOptions', () => {
+      // Data that would fail standard validation (name too short)
+      const badData = { name: 'ab' };
+      const mockValidationFn = jest.fn(); // Does not throw
+
+      // Should NOT throw because externalValidationFunction is lenient
+      const result = createAndValidate(SimpleTestModel, badData, {
+        externalValidationFunction: mockValidationFn,
+        validateModelOptions: {
+          // These options should be completely ignored
+          forbidUnknownValues: true,
+          whitelist: true,
+        },
+      });
+
+      expect(result).toBeInstanceOf(SimpleTestModel);
+      expect(result.name).toEqual('ab');
+      expect(mockValidationFn).toHaveBeenCalledTimes(1);
+      expect(mockValidationFn).toHaveBeenCalledWith(result);
+    });
+
+    it('respects disableValidation: true and does not call externalValidationFunction', () => {
+      const goodData = { name: 'ValidName' };
+      const mockValidationFn = jest.fn();
+
+      const result = createAndValidate(SimpleTestModel, goodData, {
+        externalValidationFunction: mockValidationFn,
+        disableValidation: true,
+      });
+
+      expect(result).toBeInstanceOf(SimpleTestModel);
+      expect(result.name).toEqual('ValidName');
+      // External validation function should NOT be called
+      expect(mockValidationFn).not.toHaveBeenCalled();
+    });
+
+    it('respects disableValidation: false and calls externalValidationFunction', () => {
+      const goodData = { name: 'ValidName' };
+      const mockValidationFn = jest.fn();
+
+      const result = createAndValidate(SimpleTestModel, goodData, {
+        externalValidationFunction: mockValidationFn,
+        disableValidation: false,
+      });
+
+      expect(result).toBeInstanceOf(SimpleTestModel);
+      expect(result.name).toEqual('ValidName');
+      // External validation function SHOULD be called
+      expect(mockValidationFn).toHaveBeenCalledTimes(1);
+    });
+
+    it('externalValidationFunction is preferred over standard validation', () => {
+      const goodData = { name: 'ValidName' };
+      const mockValidationFn = jest.fn();
+
+      const result = createAndValidate(SimpleTestModel, goodData, {
+        externalValidationFunction: mockValidationFn,
+        // Even with strict validateModelOptions, external function is used
+        validateModelOptions: {
+          forbidUnknownValues: true,
+          whitelist: true,
+          forbidNonWhitelisted: true,
+        },
+      });
+
+      expect(result).toBeInstanceOf(SimpleTestModel);
+      expect(mockValidationFn).toHaveBeenCalledTimes(1);
+    });
+
+    it('works with nested objects', () => {
+      const data = {
+        name: 'TestConfig',
+        db: {
+          username: 'user123',
+          password: 'pass123',
+        },
+      };
+      const mockValidationFn = jest.fn();
+
+      const result = createAndValidate(ConfigData, data, {
+        externalValidationFunction: mockValidationFn,
+      });
+
+      expect(result).toBeInstanceOf(ConfigData);
+      expect(result.name).toEqual('TestConfig');
+      expect(mockValidationFn).toHaveBeenCalledTimes(1);
+      expect(mockValidationFn).toHaveBeenCalledWith(result);
+    });
+  });
+
+  describe('createAndValidate error handling in catch block', () => {
+    it('re-throws EntityCreationError when caught', () => {
+      const data = { name: 'test' };
+
+      expect(() =>
+        createAndValidate(ModelThrowingEntityCreationError, data, {
+          disableValidation: true,
+        }),
+      ).toThrow(EntityCreationError);
+
+      try {
+        createAndValidate(ModelThrowingEntityCreationError, data, {
+          disableValidation: true,
+        });
+      } catch (error) {
+        expect(error).toBeInstanceOf(EntityCreationError);
+        expect((error as EntityCreationError).message).toBe(
+          'Custom EntityCreationError from _postCreateProcessing',
+        );
+        expect((error as EntityCreationError).fields).toEqual({
+          name: {
+            value: 'test',
+            constraints: {
+              CustomConstraint:
+                'Custom EntityCreationError from _postCreateProcessing',
+            },
+          },
+        });
+      }
+    });
+
+    it('wraps ValidationError in EntityCreationError', () => {
+      const data = { name: 'test' };
+
+      expect(() =>
+        createAndValidate(ModelThrowingValidationError, data, {
+          disableValidation: true,
+        }),
+      ).toThrow(EntityCreationError);
+
+      try {
+        createAndValidate(ModelThrowingValidationError, data, {
+          disableValidation: true,
+        });
+      } catch (error) {
+        expect(error).toBeInstanceOf(EntityCreationError);
+        expect((error as EntityCreationError).message).toContain(
+          'ValidationError when creating an instance of ModelThrowingValidationError',
+        );
+        expect((error as EntityCreationError).fields).toEqual({
+          name: {
+            value: 'test',
+            constraints: {
+              customError: 'ValidationError thrown',
+            },
+          },
+        });
+      }
+    });
+
+    it('wraps generic Error in EntityCreationError', () => {
+      const data = { name: 'test' };
+
+      expect(() =>
+        createAndValidate(ModelThrowingGenericError, data, {
+          disableValidation: true,
+        }),
+      ).toThrow(EntityCreationError);
+
+      try {
+        createAndValidate(ModelThrowingGenericError, data, {
+          disableValidation: true,
+        });
+      } catch (error) {
+        expect(error).toBeInstanceOf(EntityCreationError);
+        expect((error as EntityCreationError).message).toBe(
+          'Failed to create instance of ModelThrowingGenericError: Generic error from _postCreateProcessing',
+        );
+        expect((error as EntityCreationError).fields).toEqual({});
+      }
+    });
+
+    it('re-throws non-Error values as-is', () => {
+      const data = { name: 'test' };
+
+      expect(() =>
+        createAndValidate(ModelThrowingNonError, data, {
+          disableValidation: true,
+        }),
+      ).toThrow('String error thrown');
+
+      try {
+        createAndValidate(ModelThrowingNonError, data, {
+          disableValidation: true,
+        });
+      } catch (error) {
+        expect(error).toBe('String error thrown');
+        expect(error).not.toBeInstanceOf(Error);
+      }
     });
   });
 });

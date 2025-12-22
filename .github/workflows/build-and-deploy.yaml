@@ -4,18 +4,31 @@ on:
   release:
     types: [published]
   workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Run npm publish in dry-run mode (no actual publish)'
+        required: false
+        default: 'false'
+        type: choice
+        options:
+          - 'false'
+          - 'true'
 
 run-name: ${{ github.actor }} 
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
           node-version: '20.11.x'
           cache: 'yarn'
+          registry-url: 'https://registry.npmjs.org'
 
       - name: Install Dependencies
         run: yarn install
@@ -31,11 +44,13 @@ jobs:
           name: github-pages
           path: build/docs/
 
-      - name: Authenticate with npm
-        run: echo "//registry.npmjs.org/:_authToken=${{ secrets.FP8_NPM_AUTOMATE }}" > ~/.npmrc
+      - name: Publish npm (dry-run)
+        if: github.event_name == 'workflow_dispatch' && inputs.dry_run == 'true'
+        run: npm publish --access public --provenance --dry-run
 
       - name: Publish npm
-        run: npm publish --access public
+        if: github.event_name != 'workflow_dispatch' || inputs.dry_run == 'false'
+        run: npm publish --access public --provenance
 
   deploy-pages:
     needs: build

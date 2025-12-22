@@ -48,7 +48,10 @@ export class ConfigStore<T extends object> {
 
     // If no data loaded, throw error
     if (source === undefined) {
-      logger.warn('No configuration data loaded from any source', Loggable.of('options', options));
+      logger.warn(
+        'No configuration data loaded from any source',
+        Loggable.of('options', options),
+      );
       throw new Error('No configuration data loaded from any source');
     }
 
@@ -79,6 +82,7 @@ export class ConfigStore<T extends object> {
             Loggable.of('fileds', err.fields),
           );
         } else {
+          // istanbul ignore next
           logger.warn(`Unknown validation error: ${err}`);
         }
         throw err;
@@ -112,6 +116,7 @@ export class ConfigStore<T extends object> {
     // Create a clone of the data so that result can be built
 
     let obj: any = Object.assign({}, this.data);
+    // istanbul ignore next
     localDebug(
       () => `ConfigStore.get obj: ${JSON.stringify(obj)}`,
       'ConfigStore.get',
@@ -120,6 +125,7 @@ export class ConfigStore<T extends object> {
     while (keys.length) {
       const currentKey = keys.shift();
       if (obj == undefined || currentKey === undefined || isEmpty(currentKey)) {
+        // istanbul ignore next
         localDebug(
           () => `ConfigStore.get unexpected undefined currentKey.  Exit`,
           'ConfigStore.get',
@@ -127,6 +133,7 @@ export class ConfigStore<T extends object> {
         obj = undefined;
         break;
       }
+      // istanbul ignore next
       localDebug(
         () => `ConfigStore.get currentKey: ${currentKey}`,
         'ConfigStore.get',
@@ -135,6 +142,7 @@ export class ConfigStore<T extends object> {
       // Array check is expensive as it uses regex.  Only do it if needed
       if (currentKey.includes('[')) {
         const match = this.getArrayCheckRegex.exec(currentKey);
+        // istanbul ignore next
         localDebug(
           () => `ConfigStore.get search array: ${match}}`,
           'ConfigStore.get',
@@ -146,6 +154,7 @@ export class ConfigStore<T extends object> {
           const entryKey = match[1];
           try {
             const entryIndex: number = parseInt(match[2]);
+            // istanbul ignore next
             localDebug(
               () =>
                 `ConfigStore.get search array entry on ${entryKey}[${entryIndex}]`,
@@ -157,6 +166,7 @@ export class ConfigStore<T extends object> {
               arrayEntry = arrayResult[entryIndex];
             }
           } catch (err) {
+            // istanbul ignore next
             localDebug(
               () =>
                 `ConfigStore.get error while parsing array for ${entryKey}: ${err}`,
@@ -166,6 +176,7 @@ export class ConfigStore<T extends object> {
         }
 
         if (arrayEntry === undefined) {
+          // istanbul ignore next
           localDebug(
             () => `ConfigStore.get fail to find array entry for ${currentKey}`,
             'ConfigStore.get',
