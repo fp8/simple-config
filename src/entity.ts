@@ -251,10 +251,14 @@ export function createAndValidate<T extends object | IEntityCreator>(
 
   // Validate ConfigData
   if (!options?.disableValidation) {
-    validateModel(
-      result,
-      options?.validateModelOptions ?? DEFAULT_VALIDATION_OPTIONS,
-    );
+    if (options?.externalValidationFunction) {
+      options.externalValidationFunction(result);
+    } else {
+      validateModel(
+        result,
+        options?.validateModelOptions ?? DEFAULT_VALIDATION_OPTIONS,
+      );
+    }
   }
 
   return result;
@@ -282,6 +286,11 @@ export interface EntityCreatorOptions {
    * Custom createAndValidate function
    */
   createAndValidateFunction?: TCreatedAndValidated;
+  /**
+   * Custom external validation function that ignores `validateModelOptions`
+   * but still respects `disableValidation`
+   */
+  externalValidationFunction?: (obj: unknown) => void;
 }
 
 /**
@@ -305,6 +314,7 @@ export function createEntityAndValidate<T extends object | IEntityCreator>(
     result = plainToClass(type, data);
     executePostCreateProcessing(result as IEntityCreator);
   } catch (e) {
+    // istanbul ignore next
     localDebug(() => `createAndValidate create failed with data: ${data}`);
     if (e instanceof EntityCreationError) {
       throw e;

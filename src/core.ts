@@ -83,6 +83,7 @@ function checkConfigFileExtension(filepath: string): boolean {
   }
 
   if (!valid) {
+    // istanbul ignore next
     localDebug(
       () =>
         `${filepath} not loaded as extension not one of ${DEFAULT_CONFIG_FILE_EXTENSIONS}`,
@@ -143,6 +144,7 @@ export function loadConfigFile(
       configJson = { content };
     }
   } catch (e) {
+    // istanbul ignore next
     logger.error(`Failed to config file ${filepath}`, e as Error);
     return undefined;
   }
@@ -364,6 +366,7 @@ export function processMustache(
     localDebug(() => `processing template with counter ${counter}`);
     template = mustache.render(template, data, {}, mustacheOptions);
     if (counter >= MAX_MUSTACHE_TEMPLATE_ITERACTION) {
+      // istanbul ignore next
       localDebug(
         () =>
           `Max iteraction ${MAX_MUSTACHE_TEMPLATE_ITERACTION} reached.  Resulting template: ${template}`,

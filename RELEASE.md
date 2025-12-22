@@ -1,5 +1,9 @@
 # @fp8/simple-config
 
+## 0.7.2 [2025-12-22]
+
+* Added `EntityCreatorOptions.externalValidationFunction` that allows for custom validation logic [#19]
+
 ## 0.7.1 [2025-12-21]
 
 * Added `createAndValidate` method replacing `createEntityAndValidate` supporting `EntityCreatorOptions` [#18]
